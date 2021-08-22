@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="blockly_compressed.js"></script>
+    <script src="javascript_compressed.js"></script>
+    <script type="module" src="/main.js"></script>
+    <title>Vite App</title>
+  </head>
+  <body>
+    <!-- <div id="app"></div> -->
+    <div id="blocklyDiv" style="height: 480px; width: 400px"></div>
+    <!-- <xml id="toolbox" style="display: block">
+      <block type="controls_if"></block>
+      <block type="controls_whileUntil"></block>
+    </xml> -->
+    <xml id="toolbox" style="display: none">
+      <category name="Core">
+        <category name="Control">
+          <block type="controls_if"></block>
+          <block type="controls_whileUntil"></block>
+        </category>
+        <category name="Logic">
+          <block type="logic_compare"></block>
+          <block type="logic_operation"></block>
+          <block type="logic_boolean"></block>
+        </category>
+      </category>
+      <category name="Custom">
+        <block type="start"></block>
+        <category name="Move">
+          <block type="move_forward"></block>
+          <block type="move_backward"></block>
+        </category>
+        <category name="Turn">
+          <block type="turn_left"></block>
+          <block type="turn_right"></block>
+        </category>
+      </category>
+      <category name="Text">
+        <block type="string_length">
+          <!-- <value name="VALUE">
+            <shadow type="math_number">
+              <field name="num" type="string" value="Hey">Hey</field>
+            </shadow>
+          </value> -->
+        </block>
+        <block name="data" type="text"></block>
+      </category>
+      <category name="Functions">
+        <block name="data" type="insert_function"></block>
+        <block name="data" type="procedures_defreturn"></block>
+        <!-- <block name="data" type="variables"></block> -->
+      </category>
+      <category name="Display">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </category>
+    </xml>
+    <!-- <xml id="toolbox" style="display: none">
+      <block type="logic_boolean"></block>
+    
+      <block type="math_number">
+        <field name="NUM">42</field>
+      </block>
+    
+      <block type="controls_for">
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+        <value name="BY">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+      </block>
+    
+      <block type="math_arithmetic">
+        <field name="OP">ADD</field>
+        <value name="A">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="B">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+    </xml> -->
+    <button id="run" onclick="runJS()">Run JS</button>
+    <!-- <script>
+      function runJS() {
+        try {
+          console.log("Hey");
+          eval(code);
+        } catch (e) {
+          alert(e);
+        }
+      }
+    </script> -->
+  </body>
+</html>
