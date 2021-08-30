@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="acorn_interpreter.js"></script>
     <script src="blockly_compressed.js"></script>
     <script src="javascript_compressed.js"></script>
     <script type="module" src="/main.js"></script>
@@ -11,7 +12,7 @@
   </head>
   <body>
     <!-- <div id="app"></div> -->
-    <div id="blocklyDiv" style="height: 480px; width: 400px"></div>
+    <div id="blocklyDiv" style="height: 480px; width: 800px"></div>
     <!-- <xml id="toolbox" style="display: block">
       <block type="controls_if"></block>
       <block type="controls_whileUntil"></block>
@@ -29,16 +30,9 @@
         </category>
       </category>
       <category name="Custom">
-        <block type="start"></block>
-        <category name="Move">
-          <block type="move_forward"></block>
-          <block type="move_backward"></block>
+        <block name="apiCall" type="api_call"></block>
+        <block name="apiCall2" type="more_custom_blocks"></block>
         </category>
-        <category name="Turn">
-          <block type="turn_left"></block>
-          <block type="turn_right"></block>
-        </category>
-      </category>
       <category name="Text">
         <block type="string_length">
           <!-- <value name="VALUE">
@@ -52,6 +46,11 @@
       <category name="Functions">
         <block name="data" type="insert_function"></block>
         <block name="data" type="procedures_defreturn"></block>
+        <block name="data" type="procedures_callnoreturn"></block>
+        <block type="procedures_ifreturn" id="sktls{T^g@*,aW*,5gl[" disabled="false" x="278" y="155">
+          <mutation value="1"></mutation>
+        </block>
+        <block name="try_catch" type="controls_try"></block>
         <!-- <block name="data" type="variables"></block> -->
       </category>
       <category name="Display">
@@ -59,6 +58,7 @@
           <field name="NUM">10</field>
         </block>
       </category>
+      
     </xml>
     <!-- <xml id="toolbox" style="display: none">
       <block type="logic_boolean"></block>
