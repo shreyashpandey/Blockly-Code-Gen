@@ -1,0 +1,31 @@
+https://github.com/google/blockly-samples/tree/master/plugins/field-date =>DatePlugin
+
+https://developers.google.com/blockly/guides/configure/web/themes =>Themes Doc
+
+https://developers.google.com/blockly/guides/configure/web/cloud-storage=>Cloud Storage
+
+https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks#mutator_blocks =>Mutator Blocks
+
+https://developers.google.com/blockly/guides/configure/web/toolbox#xml_format =>XML Format
+
+https://developers.google.com/blockly/guides/configure/web/toolbox#dynamic_categories =>Dynamic Categories
+
+https://developers.google.com/blockly/guides/configure/web/toolbox#buttons_and_labels =>Buttons and Labels
+
+https://blocklycodelabs.dev/codelabs/custom-toolbox/index.html?index=..%2F..index#5 =>Custom Toolbox
+
+https://developers.google.com/blockly/guides/configure/web/code-generators#realtime_generation =>Realtime Generation
+
+https://developers.google.com/blockly/guides/configure/web/resizable  =>Resizable
+
+https://developers.google.com/blockly/guides/create-custom-blocks/extensions =>Extensions
+
+https://github.com/google/blockly-samples/tree/master/plugins/field-grid-dropdown =>Field Grid Dropdown
+
+https://github.com/google/blockly-samples/blob/master/plugins/field-date/src/field_date.js =>To get an idea of implementing internal plugins
+
+https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/checkbox =>Check this for internal updation without mutation
+
+https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/overview =>Built-in Fields
+
+workspace.refreshToolboxSelection();=>To refresh the toolbox selection, present in variables_dynamic
