@@ -8,8 +8,8 @@
     <!-- <script src="acorn_interpreter.js"></script>
     <script src="blockly_compressed.js"></script>
     <script src="javascript_compressed.js"></script> -->
-    <script type="module" src="/main.js"></script>
-    <link rel="stylesheet" type='text/css' href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" />
     <title>Vite App</title>
 </head>
 
@@ -17,13 +17,11 @@
     <!-- <div id="app"></div> -->
     <div class="container">
         <div class="row">
-            <div class="col-md-8">
-            </div>
+            <div class="col-md-8"></div>
         </div>
 
         <!-- <button id="run" onclick="runJS()">Run JS</button> -->
         <div class="row">
-
             <!-- <xml id="toolbox" style="display: block">
                 <block type="controls_if"></block>
                 <block type="controls_whileUntil"></block>
@@ -452,15 +450,17 @@
                         </block>
                     </category>
                 </xml>
-                <br/>
-                <button id="run" type="button" class="btn btn-primary" onclick="runJS()">Run JS</button>
+                <br />
+                <button id="run" type="button" class="btn btn-primary" onclick="runJS()">
+            Run JS
+          </button>
             </div>
             <div class="col-md-6">
                 <div class="panel panel-default">
                     <div class="row">
                         <div id="textHolder" class="col-md-12">
-                            <div id="displayArea" style="height:480px;width:400px;">
-                                <pre id="displayCode" style="height:480px;width:600px;font-family:inherits;"></pre>
+                            <div id="displayArea" style="height: 480px; width: 400px">
+                                <pre id="displayCode" style="height: 480px; width: 600px; font-family: inherits"></pre>
                             </div>
                         </div>
                     </div>
@@ -469,22 +469,45 @@
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon1">Required Data</span>
                                 <input id="search-bar" type="search" class="form-control" placeholder="Search In Data" aria-label="Username" aria-describedby="basic-addon1" onkeyup="betterFunction()" />
-
                             </div>
-                            <ul id="search-list" class="list-group">
-                            </ul>
+                            <div class="row">
+                                <ul id="search-list" class="list-group"></ul>
+                                <!-- <button class="btn btn-success btn-sm " type="button" data-toggle="tooltip" title="Delete"><i class="bi bi-archive"></i></button> -->
+                            </div>
 
                         </div>
+                        <!-- <div class="col-md-10"> -->
                         <div id="dropBox" class="col-md-12" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <!-- <svg>
+                  <path
+                    class="blocklyPath"
+                    stroke="none"
+                    fill="#5ba58c"
+                    d=" m 8,0  h 68.07301330566406  v 5  H 76.07301330566406  V 5  H 76.07301330566406  V 22  H 76.07301330566406  V 22  V 26  h -68.07301330566406  H 8  V 20  c 0,-10  -8,8  -8,-7.5  s 8,2.5  8,-7.5 z
+"
+                  ></path>
+                  <text class="Label" x="8" y="0" style="text-anchor: middle;color:white;">
+                    S400,300 400,200
+                  </text>
+                </svg> -->
+                        </div>
+                        <!-- </div> -->
+                        <div class="col-md-2">
+                            <br/>
+                            <button id="save" type="button" class="btn btn-success" onclick="save()">Add</button>
                         </div>
                     </div>
-                    <br/>
+                    <br />
                     <div class="row">
                         <div class="col-md-6">
-                            <button type="button" class="btn btn-success" onclick="varForToolbox()">Data Variables</button>
+                            <button type="button" class="btn btn-success" onclick="varForToolbox()">
+                  Data Variables
+                </button>
                         </div>
                         <div class="col-md-6">
-                            <button id="codeView" type="button" class="btn btn-primary" onclick="codeArea()">Code Viewer</button>
+                            <button id="codeView" type="button" class="btn btn-primary" onclick="codeArea()">
+                  Code Viewer
+                </button>
                         </div>
                     </div>
                 </div>
@@ -530,17 +553,7 @@
         </value>
       </block>
     </xml> -->
-
-    <!-- <script>
-      function runJS() {
-        try {
-          console.log("Hey");
-          eval(code);
-        } catch (e) {
-          alert(e);
-        }
-      }
-    </script> -->
+    <script type="module" src="/main.js"></script>
 </body>
 
 </html>
