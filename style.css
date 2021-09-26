@@ -4,8 +4,15 @@
 
 #dataHolder {
     display: block;
-    height: 480px;
+    height: 380px;
     width: 100%;
     overflow: auto;
     border: 1px solid #ccc;
+}
+
+#dropBox {
+    height: 100px;
+    width: 400px;
+    border: 1px solid #ccc;
+    display: block;
 }

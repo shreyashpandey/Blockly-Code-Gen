@@ -623,7 +623,7 @@ Blockly.JavaScript["api_call"] = function(block) {
         ) || "''";
     let name = block.getFieldValue("functionName");
     // let headerType= block.getFieldValue("Parameters");s
-    return `async function ${name}(body) {
+    return `async function ${name}(body) { 
     return new Promise((resolve,reject)=>
     {
       let options={
@@ -691,15 +691,17 @@ function nextStep(myInterpreter) {
 function runJS() {
     Blockly.JavaScript.addReservedWords("code");
     var code = Blockly.JavaScript.workspaceToCode(workspace);
+    code = code.replace("\r\n", "\\r\\n")
     document.getElementById("displayCode").value = code;
     alert(code);
     try {
-        var myInterpreter = new Interpreter(code, initFunc);
-        if (myInterpreter.step()) {
-            window.setTimeout(nextStep, 0);
-        }
+        // var myInterpreter = new Interpreter(code, initFunc);
+        // if (myInterpreter.step()) {
+        //     window.setTimeout(nextStep, 0);
+        // }
         // nextStep(myInterpreter);
-        console.log("Hey", code);
+        // console.log("Hey", code);
+
         eval(code);
     } catch (e) {
         alert(e);
@@ -1222,6 +1224,9 @@ const newDebouncedSearch = () => {
         console.log(m);
         let li = document.createElement("li");
         li.setAttribute("class", "list-group-item");
+        li.setAttribute("draggable", true);
+        li.setAttribute("id", m.replace("=>", "_"));
+        li.setAttribute("ondragstart", "drag(event)");
         li.innerHTML = `${m}`;
         document.getElementById("search-list").appendChild(li);
     });
@@ -1252,4 +1257,20 @@ window.varForToolbox = varForToolbox;
 window.codeArea = codeArea;
 window.betterFunction = betterFunction;
 // window.debouncedSearch = debouncedSearch;
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
+}
+window.allowDrop = allowDrop;
+window.drag = drag;
+window.drop = drop;
 // window.newDebouncedSearch = newDebouncedSearch;
