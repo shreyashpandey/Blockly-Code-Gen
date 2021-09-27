@@ -421,6 +421,9 @@
                         <block type="variables_set_dynamic"></block>
                         <block type="custom_variable"></block>
                     </category>
+                    <category name="TO-BEUsed">
+                        <block type="newblock"></block>
+                    </category>
                     <category name="Text">
                         <block type="string_length">
                             <!-- <value name="VALUE">
@@ -464,7 +467,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" id="upHolder">
                         <div id="dataHolder" class="col-md-12">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon1">Required Data</span>
@@ -474,10 +477,9 @@
                                 <ul id="search-list" class="list-group"></ul>
                                 <!-- <button class="btn btn-success btn-sm " type="button" data-toggle="tooltip" title="Delete"><i class="bi bi-archive"></i></button> -->
                             </div>
-
                         </div>
                         <!-- <div class="col-md-10"> -->
-                        <div id="dropBox" class="col-md-12" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div id="dropBox" class="col-md-10" ondrop="drop(event)" ondragover="allowDrop(event)">
                             <!-- <svg>
                   <path
                     class="blocklyPath"
@@ -493,8 +495,10 @@
                         </div>
                         <!-- </div> -->
                         <div class="col-md-2">
-                            <br/>
-                            <button id="save" type="button" class="btn btn-success" onclick="save()">Add</button>
+                            <br />
+                            <button id="save" type="button" class="btn btn-success" onclick="addToToolbox()">
+                  Add
+                </button>
                         </div>
                     </div>
                     <br />
@@ -554,6 +558,8 @@
       </block>
     </xml> -->
     <script type="module" src="/main.js"></script>
+    <script type="text/javascript" src="https://developerapp.leadsquared.com/customapp/script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </body>
 
 </html>

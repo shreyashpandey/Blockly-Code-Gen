@@ -16,6 +16,11 @@
     width: 540px;
     border: 1px solid #ccc;
     display: block;
+    overflow: auto;
+}
+
+#upHolder {
+    border: #ccc 1px solid;
 }
 
 .bi::before {

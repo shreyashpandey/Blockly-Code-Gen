@@ -12,6 +12,10 @@ import axios from "axios";
 //   <h1>Hello Vite!</h1>
 //   <a href="https://vitejs.dev/guide/features.html" target="_blank">Documentation</a>
 // `
+let blk = document.createElement("block");
+blk.setAttribute("type", "more_custom_blocks");
+blk.setAttribute("id", "more_custom_blocks");
+document.getElementById("toolbox").appendChild(blk);
 var workspace = Blockly.inject("blocklyDiv", {
     toolbox: document.getElementById("toolbox"),
     move: {
@@ -33,7 +37,11 @@ var workspace = Blockly.inject("blocklyDiv", {
     },
     trashcan: true,
 });
-
+console.log("Workspace", workspace);
+// let blk = document.createElement("block");
+// blk.setAttribute("type", "custom_block");
+// blk.setAttribute("id", "custom_block");
+// document.getElementById("toolbox").appendChild(blk);
 /**************************  Was Checking Something Over Here **************************************/
 // Blockly.Xml.workspaceToDom = function(workspace, opt_noId) {
 //     var xml = Blockly.utils.xml.createElement('xml');
@@ -418,10 +426,10 @@ Blockly.JavaScript["customised_list"] = function(block) {
     let elem = [];
     console.log("Customised List Elements", elements);
     for (var i = 0; i < block.itemCount_; i++) {
-        // elements[i] = Blockly.JavaScript.valueToCode(block, 'ADD' + i,
-        //     Blockly.JavaScript.ORDER_FUNCTION_CALL) || 'null';
-        elements[i] = block.getFieldValue("ADD" + i);
-        elem.push(block.getFieldValue("ADD" + i));
+        elements[i] = Blockly.JavaScript.customisedValueToCode(block, 'ADD' + i,
+            Blockly.JavaScript.ORDER_FUNCTION_CALL) || 'null';
+        // elements[i] = block.getFieldValue("ADD" + i);
+        // elem.push(block.getFieldValue("ADD" + i));
         console.log("Customised List Element", elem[i]);
         // elem.push()
     }
@@ -432,7 +440,43 @@ Blockly.JavaScript["customised_list"] = function(block) {
     return code;
 };
 /************************************************************************************************/
+Blockly.JavaScript['controls_if'] = function(block) {
+    // If/elseif/else condition.
+    var n = 0;
+    var code = '',
+        branchCode, conditionCode;
+    if (Blockly.JavaScript.STATEMENT_PREFIX) {
+        // Automatic prefix insertion is switched off for this block.  Add manually.
+        code += Blockly.JavaScript.injectId(Blockly.JavaScript.STATEMENT_PREFIX,
+            block);
+    }
+    do {
+        conditionCode = Blockly.JavaScript.customisedValueToCode(block, 'IF' + n,
+            Blockly.JavaScript.ORDER_NONE) || 'false';
+        branchCode = Blockly.JavaScript.statementToCode(block, 'DO' + n);
+        if (Blockly.JavaScript.STATEMENT_SUFFIX) {
+            branchCode = Blockly.JavaScript.prefixLines(
+                Blockly.JavaScript.injectId(Blockly.JavaScript.STATEMENT_SUFFIX,
+                    block), Blockly.JavaScript.INDENT) + branchCode;
+        }
+        code += (n > 0 ? ' else ' : '') +
+            'if (' + conditionCode + ') {\n' + branchCode + '}';
+        ++n;
+    } while (block.getInput('IF' + n));
 
+    if (block.getInput('ELSE') || Blockly.JavaScript.STATEMENT_SUFFIX) {
+        branchCode = Blockly.JavaScript.statementToCode(block, 'ELSE');
+        if (Blockly.JavaScript.STATEMENT_SUFFIX) {
+            branchCode = Blockly.JavaScript.prefixLines(
+                Blockly.JavaScript.injectId(Blockly.JavaScript.STATEMENT_SUFFIX,
+                    block), Blockly.JavaScript.INDENT) + branchCode;
+        }
+        code += ' else {\n' + branchCode + '}';
+    }
+    return code + '\n';
+};
+
+Blockly.JavaScript['controls_ifelse'] = Blockly.JavaScript['controls_if'];
 Blockly.Blocks["function_caller"] = {
     init: function() {
         this.appendDummyInput()
@@ -658,6 +702,8 @@ Blockly.JavaScript["api_call"] = function(block) {
       })
     })`;
 };
+
+
 Blockly.JavaScript["string_length"] = function(block) {
     // String or array length.
     var argument0 =
@@ -909,6 +955,7 @@ Blockly.JavaScript["controls_try"] = function(block) {
         "\n}";
     return code + "\n";
 };
+
 
 // const callingApi=()=>{
 //   return new Promise((resolve,reject)=>{
@@ -1249,7 +1296,7 @@ const newDebouncedSearch = () => {
             let li = document.createElement("li");
             li.setAttribute("class", "list-group-item");
             li.setAttribute("draggable", true);
-            li.setAttribute("id", m.replace("=>", "_"));
+            li.setAttribute("id", m.replaceAll("=>", "_"));
             li.setAttribute("ondragstart", "drag(event)");
             li.innerHTML = `${m}`;
             document.getElementById("search-list").appendChild(li);
@@ -1305,6 +1352,58 @@ function drop(ev) {
 function deleteList(e) {
     e.parentNode.remove();
 }
+
+function updatingToolbox() {
+    eval(Blockly.Blocks['newblock'] = {
+        init: function() {
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    });
+
+    eval(Blockly.JavaScript['newblock'] = function(block) {
+        // TODO: Assemble JavaScript into code variable.
+        var code = '...;\n';
+        return code;
+    });
+    let block_name = "usedToBeValue";
+    let toolBoxid = "toolbox"
+    let block_categoryName = "TO-BEUsed"
+
+    var xml;
+    xml = '<block type=' + block_name + '></block>';
+    console.log($('#' + toolBoxid));
+    console.log(document.getElementById(toolBoxid));
+    $('#' + toolBoxid).find("[name='" + block_categoryName + "']").append(xml);
+    workspace.updateToolbox(document.getElementById(toolBoxid));
+}
+
+function addToToolbox() {
+    let childNodes = document.getElementById("dropBox").childNodes;
+
+    console.log("Child Nodes", childNodes[3].id);
+    creatingBlockAndGenerator(childNodes[3].id);
+}
+
+function creatingBlockAndGenerator(id) {
+    Blockly.Blocks["usedToBeValue"] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldTextInput(id.replaceAll("_", ".")), id);
+            this.setColour(15);
+            this.setOutput(true, null);
+            this.setTooltip("");
+        },
+    };
+    Blockly.JavaScript["usedToBeValue"] = function(block) {
+        let code = block.getFieldValue(id);
+        return code;
+    };
+    updatingToolbox();
+}
+
+window.addToToolbox = addToToolbox;
 window.deleteList = deleteList;
 window.allowDrop = allowDrop;
 window.drag = drag;
