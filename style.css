@@ -1,10 +1,16 @@
 #textHolder {
     display: none;
+    border: 1px solid #333;
+}
+
+#blocklyDiv {
+    position: relative;
+    left: -250px;
 }
 
 #dataHolder {
     display: block;
-    height: 380px;
+    height: 40px;
     width: 100%;
     overflow: auto;
     border: 1px solid #ccc;
@@ -12,8 +18,7 @@
 }
 
 #dropBox {
-    height: 100px;
-    width: 540px;
+    height: 440px;
     border: 1px solid #ccc;
     display: block;
     overflow: auto;

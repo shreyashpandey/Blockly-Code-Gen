@@ -3,6 +3,20 @@ import Blockly from "blockly";
 import { FieldSlider } from "@blockly/field-slider";
 import FieldDate from "@blockly/field-date";
 import axios from "axios";
+import CodeMirror from "codemirror";
+import "codemirror/lib/codemirror.js";
+import "codemirror/addon/search/searchcursor.js";
+import "codemirror/addon/search/search.js";
+import "codemirror/addon/dialog/dialog.js";
+import "codemirror/mode/javascript/javascript";
+import "codemirror/addon/edit/closebrackets";
+import "codemirror/addon/edit/matchbrackets";
+import "codemirror/addon/comment/comment.js";
+import "codemirror/addon/wrap/hardwrap.js";
+import "codemirror/addon/fold/foldcode.js";
+import "codemirror/addon/fold/brace-fold.js";
+import "codemirror/keymap/sublime.js"
+// var CodeMirror = require("codemirror");
 // import * as Blockly from 'blockly';
 // import {registerTooltipExtension} from '@blockly/block-extension-tooltip';
 // import {request} from "./node_modules/request/index.js";
@@ -12,10 +26,18 @@ import axios from "axios";
 //   <h1>Hello Vite!</h1>
 //   <a href="https://vitejs.dev/guide/features.html" target="_blank">Documentation</a>
 // `
-let blk = document.createElement("block");
-blk.setAttribute("type", "more_custom_blocks");
-blk.setAttribute("id", "more_custom_blocks");
-document.getElementById("toolbox").appendChild(blk);
+// let blk = document.createElement("block");
+// blk.setAttribute("type", "more_custom_blocks");
+// blk.setAttribute("id", "more_custom_blocks");
+// document.getElementById("toolbox").appendChild(blk);
+var value = "// The bindings defined specifically in the Sublime Text mode\nvar bindings = {\n";
+var map = CodeMirror.keyMap.sublime;
+console.log("Map for Code Mirror", map);
+for (var key in map) {
+    var val = map[key];
+    if (key != "fallthrough" && val != "..." && (!/find/.test(val) || /findUnder/.test(val)))
+        value += "  \"" + key + "\": \"" + val + "\",\n";
+}
 var workspace = Blockly.inject("blocklyDiv", {
     toolbox: document.getElementById("toolbox"),
     move: {
@@ -90,6 +112,8 @@ const callingAPI = () => {
 //   }).catch((err)=>{
 //     console.log(err);
 //   });
+
+var reUsableBlocks = ["custom_variable", "function_caller", "newblock", "api_call"];
 Blockly.Blocks["string_length"] = {
     init: function() {
         // Blockly.Extensions.apply('custom-tooltip-extension', this, false);
@@ -440,6 +464,7 @@ Blockly.JavaScript["customised_list"] = function(block) {
     return code;
 };
 /************************************************************************************************/
+/********************************  Controls-If Generator Changed  ***************************************************/
 Blockly.JavaScript['controls_if'] = function(block) {
     // If/elseif/else condition.
     var n = 0;
@@ -477,43 +502,256 @@ Blockly.JavaScript['controls_if'] = function(block) {
 };
 
 Blockly.JavaScript['controls_ifelse'] = Blockly.JavaScript['controls_if'];
-Blockly.Blocks["function_caller"] = {
-    init: function() {
-        this.appendDummyInput()
-            .appendField("Calling Function")
-            .appendField(
-                new Blockly.FieldDropdown(
-                    [
-                        ["1", "functionOne"],
-                        ["2", "functionTwo"],
-                    ],
-                    this.validate
-                ),
-                "funcDropdown"
-            );
 
-        // this.appendStatementInput("MAIN_FUNCTION")
-        //     .setCheck(null);
-        this.setColour(200);
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    },
-    validate: function(newValue) {
-        this.getSourceBlock().updateConnections(newValue);
-        return newValue;
-    },
-    updateConnections: function(newValue) {
-        this.removeInput("functionOne", /* no error */ true);
-        this.removeInput("functionTwo", /* no error */ true);
-        if (newValue == "functionOne") {
-            this.appendStatementInput("functionOne");
-        } else if (newValue == "functionTwo") {
-            this.appendValueInput("functionTwo");
-        }
-    },
+Blockly.JavaScript['logic_compare'] = function(block) {
+    // Comparison operator.
+    var OPERATORS = {
+        'EQ': '==',
+        'NEQ': '!=',
+        'LT': '<',
+        'LTE': '<=',
+        'GT': '>',
+        'GTE': '>='
+    };
+    var operator = OPERATORS[block.getFieldValue('OP')];
+    var order = (operator == '==' || operator == '!=') ?
+        Blockly.JavaScript.ORDER_EQUALITY : Blockly.JavaScript.ORDER_RELATIONAL;
+    var argument0 = Blockly.JavaScript.customisedValueToCode(block, 'A', order) || '0';
+    var argument1 = Blockly.JavaScript.customisedValueToCode(block, 'B', order) || '0';
+    var code = argument0 + ' ' + operator + ' ' + argument1;
+    return [code, order];
 };
+
+Blockly.JavaScript['logic_operation'] = function(block) {
+    // Operations 'and', 'or'.
+    var operator = (block.getFieldValue('OP') == 'AND') ? '&&' : '||';
+    var order = (operator == '&&') ? Blockly.JavaScript.ORDER_LOGICAL_AND :
+        Blockly.JavaScript.ORDER_LOGICAL_OR;
+    var argument0 = Blockly.JavaScript.customisedValueToCode(block, 'A', order);
+    var argument1 = Blockly.JavaScript.customisedValueToCode(block, 'B', order);
+    if (!argument0 && !argument1) {
+        // If there are no arguments, then the return value is false.
+        argument0 = 'false';
+        argument1 = 'false';
+    } else {
+        // Single missing arguments have no effect on the return value.
+        var defaultArgument = (operator == '&&') ? 'true' : 'false';
+        if (!argument0) {
+            argument0 = defaultArgument;
+        }
+        if (!argument1) {
+            argument1 = defaultArgument;
+        }
+    }
+    var code = argument0 + ' ' + operator + ' ' + argument1;
+    return [code, order];
+};
+
+Blockly.JavaScript['logic_negate'] = function(block) {
+    // Negation.
+    var order = Blockly.JavaScript.ORDER_LOGICAL_NOT;
+    var argument0 = Blockly.JavaScript.customisedValueToCode(block, 'BOOL', order) ||
+        'true';
+    var code = '!' + argument0;
+    return [code, order];
+};
+
+Blockly.JavaScript['logic_boolean'] = function(block) {
+    // Boolean values true and false.
+    var code = (block.getFieldValue('BOOL') == 'TRUE') ? 'true' : 'false';
+    return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['logic_null'] = function(block) {
+    // Null data type.
+    return ['null', Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.JavaScript['logic_ternary'] = function(block) {
+    // Ternary operator.
+    var value_if = Blockly.JavaScript.customisedValueToCode(block, 'IF',
+        Blockly.JavaScript.ORDER_CONDITIONAL) || 'false';
+    var value_then = Blockly.JavaScript.customisedValueToCode(block, 'THEN',
+        Blockly.JavaScript.ORDER_CONDITIONAL) || 'null';
+    var value_else = Blockly.JavaScript.customisedValueToCode(block, 'ELSE',
+        Blockly.JavaScript.ORDER_CONDITIONAL) || 'null';
+    var code = value_if + ' ? ' + value_then + ' : ' + value_else;
+    return [code, Blockly.JavaScript.ORDER_CONDITIONAL];
+};
+
+
+/************************************************************************************************/
+
+/********************************  Controls-Loop Generator Changed  ***************************************************/
+
+Blockly.JavaScript['controls_repeat_ext'] = function(block) {
+    // Repeat n times.
+    if (block.getField('TIMES')) {
+        // Internal number.
+        var repeats = String(Number(block.getFieldValue('TIMES')));
+    } else {
+        // External number.
+        var repeats = Blockly.JavaScript.customisedValueToCode(block, 'TIMES',
+            Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+    }
+    var branch = Blockly.JavaScript.statementToCode(block, 'DO');
+    branch = Blockly.JavaScript.addLoopTrap(branch, block);
+    var code = '';
+    var loopVar = Blockly.JavaScript.nameDB_.getDistinctName(
+        'count', Blockly.VARIABLE_CATEGORY_NAME);
+    var endVar = repeats;
+    if (!repeats.match(/^\w+$/) && !Blockly.isNumber(repeats)) {
+        endVar = Blockly.JavaScript.nameDB_.getDistinctName(
+            'repeat_end', Blockly.VARIABLE_CATEGORY_NAME);
+        code += 'var ' + endVar + ' = ' + repeats + ';\n';
+    }
+    code += 'for (var ' + loopVar + ' = 0; ' +
+        loopVar + ' < ' + endVar + '; ' +
+        loopVar + '++) {\n' +
+        branch + '}\n';
+    return code;
+};
+
+Blockly.JavaScript['controls_repeat'] =
+    Blockly.JavaScript['controls_repeat_ext'];
+
+Blockly.JavaScript['controls_whileUntil'] = function(block) {
+    // Do while/until loop.
+    var until = block.getFieldValue('MODE') == 'UNTIL';
+    var argument0 = Blockly.JavaScript.valueToCode(block, 'BOOL',
+        until ? Blockly.JavaScript.ORDER_LOGICAL_NOT :
+        Blockly.JavaScript.ORDER_NONE) || 'false';
+    var branch = Blockly.JavaScript.statementToCode(block, 'DO');
+    branch = Blockly.JavaScript.addLoopTrap(branch, block);
+    if (until) {
+        argument0 = '!' + argument0;
+    }
+    return 'while (' + argument0 + ') {\n' + branch + '}\n';
+};
+
+Blockly.JavaScript['controls_for'] = function(block) {
+    // For loop.
+    var variable0 = Blockly.JavaScript.nameDB_.getName(
+        block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
+    var argument0 = Blockly.JavaScript.valueToCode(block, 'FROM',
+        Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+    var argument1 = Blockly.JavaScript.valueToCode(block, 'TO',
+        Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+    var increment = Blockly.JavaScript.valueToCode(block, 'BY',
+        Blockly.JavaScript.ORDER_ASSIGNMENT) || '1';
+    var branch = Blockly.JavaScript.statementToCode(block, 'DO');
+    branch = Blockly.JavaScript.addLoopTrap(branch, block);
+    var code;
+    if (Blockly.isNumber(argument0) && Blockly.isNumber(argument1) &&
+        Blockly.isNumber(increment)) {
+        // All arguments are simple numbers.
+        var up = Number(argument0) <= Number(argument1);
+        code = 'for (' + variable0 + ' = ' + argument0 + '; ' +
+            variable0 + (up ? ' <= ' : ' >= ') + argument1 + '; ' +
+            variable0;
+        var step = Math.abs(Number(increment));
+        if (step == 1) {
+            code += up ? '++' : '--';
+        } else {
+            code += (up ? ' += ' : ' -= ') + step;
+        }
+        code += ') {\n' + branch + '}\n';
+    } else {
+        code = '';
+        // Cache non-trivial values to variables to prevent repeated look-ups.
+        var startVar = argument0;
+        if (!argument0.match(/^\w+$/) && !Blockly.isNumber(argument0)) {
+            startVar = Blockly.JavaScript.nameDB_.getDistinctName(
+                variable0 + '_start', Blockly.VARIABLE_CATEGORY_NAME);
+            code += 'var ' + startVar + ' = ' + argument0 + ';\n';
+        }
+        var endVar = argument1;
+        if (!argument1.match(/^\w+$/) && !Blockly.isNumber(argument1)) {
+            endVar = Blockly.JavaScript.nameDB_.getDistinctName(
+                variable0 + '_end', Blockly.VARIABLE_CATEGORY_NAME);
+            code += 'var ' + endVar + ' = ' + argument1 + ';\n';
+        }
+        // Determine loop direction at start, in case one of the bounds
+        // changes during loop execution.
+        var incVar = Blockly.JavaScript.nameDB_.getDistinctName(
+            variable0 + '_inc', Blockly.VARIABLE_CATEGORY_NAME);
+        code += 'var ' + incVar + ' = ';
+        if (Blockly.isNumber(increment)) {
+            code += Math.abs(increment) + ';\n';
+        } else {
+            code += 'Math.abs(' + increment + ');\n';
+        }
+        code += 'if (' + startVar + ' > ' + endVar + ') {\n';
+        code += Blockly.JavaScript.INDENT + incVar + ' = -' + incVar + ';\n';
+        code += '}\n';
+        code += 'for (' + variable0 + ' = ' + startVar + '; ' +
+            incVar + ' >= 0 ? ' +
+            variable0 + ' <= ' + endVar + ' : ' +
+            variable0 + ' >= ' + endVar + '; ' +
+            variable0 + ' += ' + incVar + ') {\n' +
+            branch + '}\n';
+    }
+    return code;
+};
+
+Blockly.JavaScript['controls_forEach'] = function(block) {
+    // For each loop.
+    var variable0 = Blockly.JavaScript.nameDB_.getName(
+        block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
+    var argument0 = Blockly.JavaScript.valueToCode(block, 'LIST',
+        Blockly.JavaScript.ORDER_ASSIGNMENT) || '[]';
+    var branch = Blockly.JavaScript.statementToCode(block, 'DO');
+    branch = Blockly.JavaScript.addLoopTrap(branch, block);
+    var code = '';
+    // Cache non-trivial values to variables to prevent repeated look-ups.
+    var listVar = argument0;
+    if (!argument0.match(/^\w+$/)) {
+        listVar = Blockly.JavaScript.nameDB_.getDistinctName(
+            variable0 + '_list', Blockly.VARIABLE_CATEGORY_NAME);
+        code += 'var ' + listVar + ' = ' + argument0 + ';\n';
+    }
+    var indexVar = Blockly.JavaScript.nameDB_.getDistinctName(
+        variable0 + '_index', Blockly.VARIABLE_CATEGORY_NAME);
+    branch = Blockly.JavaScript.INDENT + variable0 + ' = ' +
+        listVar + '[' + indexVar + '];\n' + branch;
+    code += 'for (var ' + indexVar + ' in ' + listVar + ') {\n' + branch + '}\n';
+    return code;
+};
+
+Blockly.JavaScript['controls_flow_statements'] = function(block) {
+    // Flow statements: continue, break.
+    var xfix = '';
+    if (Blockly.JavaScript.STATEMENT_PREFIX) {
+        // Automatic prefix insertion is switched off for this block.  Add manually.
+        xfix += Blockly.JavaScript.injectId(Blockly.JavaScript.STATEMENT_PREFIX,
+            block);
+    }
+    if (Blockly.JavaScript.STATEMENT_SUFFIX) {
+        // Inject any statement suffix here since the regular one at the end
+        // will not get executed if the break/continue is triggered.
+        xfix += Blockly.JavaScript.injectId(Blockly.JavaScript.STATEMENT_SUFFIX,
+            block);
+    }
+    if (Blockly.JavaScript.STATEMENT_PREFIX) {
+        var loop = Blockly.Constants.Loops
+            .CONTROL_FLOW_IN_LOOP_CHECK_MIXIN.getSurroundLoop(block);
+        if (loop && !loop.suppressPrefixSuffix) {
+            // Inject loop's statement prefix here since the regular one at the end
+            // of the loop will not get executed if 'continue' is triggered.
+            // In the case of 'break', a prefix is needed due to the loop's suffix.
+            xfix += Blockly.JavaScript.injectId(Blockly.JavaScript.STATEMENT_PREFIX,
+                loop);
+        }
+    }
+    switch (block.getFieldValue('FLOW')) {
+        case 'BREAK':
+            return xfix + 'break;\n';
+        case 'CONTINUE':
+            return xfix + 'continue;\n';
+    }
+    throw Error('Unknown flow statement.');
+};
+/************************************************************************************************/
 Blockly.Blocks["customised_list_2"] = {
     init: function() {
         this.itemCount_ = 0;
@@ -578,17 +816,101 @@ Blockly.JavaScript["customised_list_2"] = function(block) {
     let code1 = `[${block.getFieldValue("Test")}]`;
     return co;
 };
+let functionCallArray = [];
+Blockly.Blocks["function_caller"] = {
+    init: function() {
+        functionCallArray = [];
+        if (localStorage.getItem("FunctionsPresent") !== "") {
+            this.functionsPresent = localStorage.getItem("FunctionsPresent").split(",").map((m) => {
+                functionCallArray.push([m, m]);
+            })
+            console.log("Function Call Array", functionCallArray);
+            this.appendDummyInput()
+                .appendField("Calling Function")
+                .appendField(new Blockly.FieldDropdown(functionCallArray), "funcDropdown");
+        } else {
+            console.log("Function Call Array", functionCallArray);
+            this.appendDummyInput()
+                .appendField("Calling Function")
+                .appendField(new Blockly.FieldTextInput("No functions Present"), "funcNotPresent");
+        }
+
+        // .appendField(
+        //     new Blockly.FieldDropdown(
+        //         [
+        //             ["1", "functionOne"],
+        //             ["2", "functionTwo"],
+        //         ],
+        //         this.validate
+        //     ),
+        //     "funcDropdown"
+        // );
+
+        // this.appendStatementInput("MAIN_FUNCTION")
+        //     .setCheck(null);
+        this.setColour(200);
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    },
+    validate: function(newValue) {
+        this.getSourceBlock().updateConnections(newValue);
+        return newValue;
+    },
+    updateConnections: function(newValue) {
+        this.removeInput("functionOne", /* no error */ true);
+        this.removeInput("functionTwo", /* no error */ true);
+        if (newValue == "functionOne") {
+            this.appendStatementInput("functionOne");
+        } else if (newValue == "functionTwo") {
+            this.appendValueInput("functionTwo");
+        }
+    },
+};
 Blockly.JavaScript["function_caller"] = function(block) {
-    let mainCode = `const var${block.getFieldValue(
+    if (block.getFieldValue("funcNotPresent")) {
+        return `//No functions present in workspace`;
+    } else {
+        let varCode = `const lsq${block.getFieldValue(
+        "funcDropdown"
+      )}`;
+        const variablesPresent = localStorage.getItem("VariablesPresent");
+        if (variablesPresent == "") {
+            let variables = [];
+            variables.push(varCode);
+            localStorage.setItem("VariablesPresent", variables);
+        } else {
+
+            localStorage.setItem("VariablesPresent", localStorage.getItem("VariablesPresent").split(",").push(varCode));
+        }
+        let mainCode = `const lsq${block.getFieldValue(
     "funcDropdown"
   )}=await ${block.getFieldValue("funcDropdown")}();\n`;
-    return mainCode;
+        return mainCode;
+    }
 };
+let variableCallArray = [];
 Blockly.Blocks["callback"] = {
     init: function() {
         this.appendDummyInput()
             .appendField("callback")
-            .appendField(new Blockly.FieldVariable("callBack"), "callBack");
+            .appendField(new Blockly.FieldTextInput("CallbackResponse"), "callBack");
+        variableCallArray = [];
+        if (localStorage.getItem("VariablesPresent") !== "") {
+            this.variablesPresent = localStorage.getItem("VariablesPresent").split(",").map((m) => {
+                variableCallArray.push([m, m]);
+            })
+            console.log("Variable Call Array", variableCallArray);
+            this.appendDummyInput()
+                .appendField("callbackVariable")
+                .appendField(new Blockly.FieldDropdown(variableCallArray), "varDropdown");
+        } else {
+            console.log("Variable Call Array", variableCallArray);
+            this.appendDummyInput()
+                .appendField("callbackVariable")
+                .appendField(new Blockly.FieldTextInput("No variables Present"), "varNotPresent");
+        }
         this.setPreviousStatement(true);
 
         this.setColour(230);
@@ -597,13 +919,13 @@ Blockly.Blocks["callback"] = {
     },
 };
 Blockly.JavaScript["callback"] = function(block) {
-    let callbackVal = Blockly.JavaScript.valueToCode(
-        block,
-        "callbackVal",
-        Blockly.JavaScript.ORDER_ATOMIC
-    );
-    let callbackCode = `callback(${callbackVal})`;
-    return callbackCode;
+    if (block.getFieldValue("varNotPresent")) {
+        return `//No variables present in workspace`;
+    } else {
+        let callbackText = block.getFieldValue("callBack");
+        let mainCode = `callback("${callbackText}",${block.getFieldValue("varDropdown")};\n`;
+        return mainCode;
+    }
 };
 
 Blockly.Blocks["api_call"] = {
@@ -673,6 +995,14 @@ Blockly.JavaScript["api_call"] = function(block) {
             Blockly.JavaScript.ORDER_FUNCTION_CALL
         ) || "''";
     let name = block.getFieldValue("functionName");
+    const functionsPresent = localStorage.getItem("FunctionsPresent");
+    if (functionsPresent == "") {
+        let functions = [];
+        functions.push(name);
+        localStorage.setItem("FunctionsPresent", functions);
+    } else {
+        localStorage.setItem("FunctionsPresent", localStorage.getItem("FunctionsPresent").split(",").push(name));
+    }
     // let headerType= block.getFieldValue("Parameters");s
     return `async function ${name}(body) { 
     return new Promise((resolve,reject)=>
@@ -680,7 +1010,7 @@ Blockly.JavaScript["api_call"] = function(block) {
       let options={
         url:${url},
         qs:${params},
-        method:"post"
+        method:"post",
         body:${body},
         headers:${headerType},
         json:true
@@ -692,15 +1022,18 @@ Blockly.JavaScript["api_call"] = function(block) {
         {
           if(res.statusCode==200)
           {
+            ls.log.Info(${name} response,body);
             resolve(body);
           }
           else
           {
+            ls.log.Error(${name} exception message,res.body.ExceptionMessage);
             reject(res.body.ExceptionMessage);
           }
         }
-      })
-    })`;
+      });
+    });
+}`;
 };
 
 
@@ -739,11 +1072,73 @@ Blockly.JavaScript["insert_function"] = function(block) {
 
 function nextStep(myInterpreter) {}
 
+function codeEditor() {
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        // lineNumbers: true,
+        // mode: "text/x-csrc",
+        // keyMap: "vim",
+        // matchBrackets: true,
+        // showCursorWhenSelecting: true
+        lineNumbers: true,
+        mode: "javascript",
+        keyMap: "sublime",
+        autoCloseBrackets: true,
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        theme: "monokai",
+        tabSize: 2,
+        value: code
+    });
+}
+
 function runJS() {
     Blockly.JavaScript.addReservedWords("code");
-    var code = Blockly.JavaScript.workspaceToCode(workspace);
+    let code = Blockly.JavaScript.workspaceToCode(workspace);
+    console.log("Top Blocks present in workspace", workspace.topBlocks_);
+    console.log("Function Value Required", workspace.topBlocks_[0]["inputList"][0]["fieldRow"][1]["value_"]);
+    let functionValue = workspace.topBlocks_.map((tl) => {
+        if (tl.inputList[0]["fieldRow"] != 0)
+            tl.inputList[0]["fieldRow"][1];
+    })
+    console.log("Function", functionValue);
     // code = code.replace("\r\n", "\\r\\n");
-    document.getElementById("displayCode").innerHTML = code;
+    document.getElementById("code").value = code;
+    codeEditor();
+    /************************** */
+    var editor = CodeMirror.fromTextArea(document.getElementById("displayCode"), {
+        lineNumbers: true,
+        mode: "javascript",
+        keyMap: "sublime",
+        autoCloseBrackets: true,
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        theme: "monokai",
+        tabSize: 2,
+        value: code
+    });
+    console.log(editor);
+    // var input = document.getElementById("select");
+
+    // function selectTheme() {
+    //     var theme = input.options[input.selectedIndex].textContent;
+    //     editor.setOption("theme", theme);
+    //     location.hash = "#" + theme;
+    // }
+    // var choice = (location.hash && location.hash.slice(1)) ||
+    //     (document.location.search &&
+    //         decodeURIComponent(document.location.search.slice(1)));
+    // if (choice) {
+    //     input.value = choice;
+    //     editor.setOption("theme", choice);
+    // }
+    // CodeMirror.on(window, "hashchange", function() {
+    //     var theme = location.hash.slice(1);
+    //     if (theme) {
+    //         input.value = theme;
+    //         selectTheme();
+    //     }
+    // });
+    /************************** */
     alert(code);
     try {
         // var myInterpreter = new Interpreter(code, initFunc);
@@ -755,7 +1150,7 @@ function runJS() {
 
         eval(code);
     } catch (e) {
-        alert(e);
+        console.log("Error In workspace", e);
     }
 }
 window.runJS = runJS;
@@ -879,6 +1274,15 @@ Blockly.Blocks["custom_variable"] = {
 };
 Blockly.JavaScript["custom_variable"] = function(block) {
     let varCode = block.getFieldValue("pElement");
+    const variablesPresent = localStorage.getItem("VariablesPresent");
+    if (variablesPresent == "") {
+        let variables = [];
+        variables.push(varCode);
+        localStorage.setItem("VariablesPresent", variables);
+    } else {
+
+        localStorage.setItem("VariablesPresent", localStorage.getItem("VariablesPresent").split(",").push(varCode));
+    }
     let varDropdown = block.getFieldValue("varDropdown");
     if (varDropdown == "body") {
         return varCode;
@@ -897,7 +1301,25 @@ Blockly.JavaScript["custom_variable"] = function(block) {
         );
     }
 };
+Blockly.Blocks["list_traverser"] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("Traverse List")
+            .appendField(new Blockly.FieldTextInput("element"), "element")
+        this.appendStatementInput("traverser")
+        this.setColour(45);
+        this.setTooltip("");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+    }
+}
+Blockly.JavaScript["list_traverser"] = function(block) {
+    // let traverse = block.getFieldValue("traverse");
+    let element = block.getFieldValue("element");
+    let traversed = Blockly.JavaScript.statementToCode(block, "traverser");
 
+    return "for(let  i  of " + element + "){\n" + traversed + "\n}"
+}
 Blockly.Blocks["custom_while"] = {
     init: function() {
         // this.appendDummyInput().appendField("while");
@@ -1295,6 +1717,7 @@ const newDebouncedSearch = () => {
             console.log(m);
             let li = document.createElement("li");
             li.setAttribute("class", "list-group-item");
+            li.setAttribute("style", "word-wrap: break-word;")
             li.setAttribute("draggable", true);
             li.setAttribute("id", m.replaceAll("=>", "_"));
             li.setAttribute("ondragstart", "drag(event)");
@@ -1339,35 +1762,44 @@ function drag(ev) {
 
 function drop(ev) {
     ev.preventDefault();
+
     let data = ev.dataTransfer.getData("text");
+    console.log("qqq", data);
     let button = document.createElement("button");
     button.setAttribute("class", "btn btn-danger");
+    button.setAttribute("id", `but${data}`);
     button.setAttribute("style", "float:right");
     button.setAttribute("onclick", "deleteList(this)");
     button.innerHTML = "Delete";
+    document.getElementById(data).setAttribute("draggable", false);
+    document.getElementById(data).removeEventListener("drop", function(e) { e.preventDefault(); });
     document.getElementById(data).appendChild(button);
     ev.target.appendChild(document.getElementById(data));
+}
+
+function removeDrop() {
+    console.log("removed");
 }
 
 function deleteList(e) {
     e.parentNode.remove();
 }
 
-function updatingToolbox() {
-    eval(Blockly.Blocks['newblock'] = {
-        init: function() {
-            this.setColour(230);
-            this.setTooltip('');
-            this.setHelpUrl('');
-        }
-    });
+function updatingToolbox(id) {
+    // eval(Blockly.Blocks['newblock'] = {
+    //     init: function() {
+    //         this.setColour(230);
+    //         this.setTooltip('');
+    //         this.setHelpUrl('');
+    //     }
+    // });
 
-    eval(Blockly.JavaScript['newblock'] = function(block) {
-        // TODO: Assemble JavaScript into code variable.
-        var code = '...;\n';
-        return code;
-    });
-    let block_name = "usedToBeValue";
+    // eval(Blockly.JavaScript['newblock'] = function(block) {
+    //     // TODO: Assemble JavaScript into code variable.
+    //     var code = '...;\n';
+    //     return code;
+    // });
+    let block_name = `usedToBeValue${id}`;
     let toolBoxid = "toolbox"
     let block_categoryName = "TO-BEUsed"
 
@@ -1378,16 +1810,37 @@ function updatingToolbox() {
     $('#' + toolBoxid).find("[name='" + block_categoryName + "']").append(xml);
     workspace.updateToolbox(document.getElementById(toolBoxid));
 }
+localStorage.setItem("UsedValuesFromBody", []);
+localStorage.setItem("FunctionsPresent", []);
+localStorage.setItem("VariablesPresent", []);
 
 function addToToolbox() {
     let childNodes = document.getElementById("dropBox").childNodes;
+    let lS = localStorage.getItem("UsedValuesFromBody");
+    if (lS == "") {
+        for (let i = 3; i < childNodes.length; i++) {
+            if (localStorage.getItem("UsedValuesFromBody") == "") {
+                localStorage.setItem("UsedValuesFromBody", childNodes[i].id);
+                creatingBlockAndGenerator(childNodes[i].id);
+            } else {
+                localStorage.setItem("UsedValuesFromBody", localStorage.getItem("UsedValuesFromBody") + "," + childNodes[i].id);
+                creatingBlockAndGenerator(childNodes[i].id);
+            }
+        }
+    } else {
+        for (let i = 3; i < childNodes.length; i++) {
+            localStorage.setItem("UsedValuesFromBody", localStorage.getItem("UsedValuesFromBody") + "," + childNodes[i].id);
+            creatingBlockAndGenerator(childNodes[i].id);
+        }
+    }
+    console.log("Child Nodes", childNodes);
+    // console.log("Child Nodes Id", childNodes[3].id);
 
-    console.log("Child Nodes", childNodes[3].id);
-    creatingBlockAndGenerator(childNodes[3].id);
+
 }
 
 function creatingBlockAndGenerator(id) {
-    Blockly.Blocks["usedToBeValue"] = {
+    Blockly.Blocks[`usedToBeValue${id}`] = {
         init: function() {
             this.appendDummyInput()
                 .appendField(new Blockly.FieldTextInput(id.replaceAll("_", ".")), id);
@@ -1396,11 +1849,39 @@ function creatingBlockAndGenerator(id) {
             this.setTooltip("");
         },
     };
-    Blockly.JavaScript["usedToBeValue"] = function(block) {
+    Blockly.JavaScript[`usedToBeValue${id}`] = function(block) {
         let code = block.getFieldValue(id);
         return code;
     };
-    updatingToolbox();
+    updatingToolbox(id);
+}
+window.setInterval(() => workspaceChecker(), 15000);
+
+function workspaceChecker() {
+    let topBlocks = workspace.topBlocks_;
+    let variableStorage = [],
+        functionStorage = [];
+    let filteredBlocks = topBlocks.filter((tB) => reUsableBlocks.includes(tB.type));
+    if (filteredBlocks.length != 0) {
+        console.log("Workspace is not empty");
+        filteredBlocks = filteredBlocks.map((fB) => {
+            if (fB.type == "api_call") {
+                functionStorage.push(fB["inputList"][0]["fieldRow"][1]["value_"]);
+                localStorage.setItem("FunctionsPresent", functionStorage);
+
+            } else {
+                console.log("Variables Workspace Details", fB["inputList"][0]["fieldRow"][1]["value_"]);
+                variableStorage.push(fB["inputList"][0]["fieldRow"][1]["value_"]);
+                localStorage.setItem("VariablesPresent", variableStorage);
+            }
+
+        })
+    }
+    let variables = localStorage.getItem("VariablesPresent").split(",");
+    let functions = localStorage.getItem("FunctionsPresent").split(",");
+    if (variables == "" && functions == "") {
+        alert("Please create a function or variable first");
+    }
 }
 
 window.addToToolbox = addToToolbox;
