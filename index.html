@@ -27,10 +27,10 @@
         <div class="row" id="tabParent">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="blocks-tab" data-bs-toggle="tab" data-bs-target="#blocks" type="button" role="tab" aria-controls="blocks" aria-selected="true" onclick="toggleTab(event)">Blocks</button>
+                    <button class="nav-link active" id="blocks-tab" data-bs-toggle="tab" data-bs-target="#blocks" type="button" role="tab" aria-controls="blocks" aria-selected="true" onclick="toggleTab(event)">Blocks</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="code-tab" data-bs-toggle="tab" data-bs-target="#codeVisible" type="button" role="tab" aria-controls="codeVisible" aria-selected="false" onclick="toggleTab(event)">Code</button>
+                    <button class="nav-link" id="code-tab" data-bs-toggle="tab" data-bs-target="#codeVisible" type="button" role="tab" aria-controls="codeVisible" aria-selected="false" onclick="toggleTab(event)">Code</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false" onclick="toggleTab(event)">Settings</button>
@@ -40,12 +40,13 @@
         <div class="row">
 
             <div class="tab-content col-md-6" id="myTabContent">
-                <div class="tab-pane fade " id="blocks" role="tabpanel" aria-labelledby="blocks-tab">
+                <div class="tab-pane fade show active" id="blocks" role="tabpanel" aria-labelledby="blocks-tab">
                     <div class="row">
                         <div class="col-md-6">
-                            <div id="blocklyDiv" style="height: 480px; width: 800px !important;"></div>
+                            <div id="blocklyDiv" style="height: 580px; width: 800px !important;"></div>
                             <xml id="toolbox" style="display: none">
                                 <category name="BaseLogic" css-icon="fa fa-toggle-on">
+                                    <block type="controls_if"></block>
                                     <block type="logic_compare" id="g:*8M4.TABu,2y5oj}4N" x="16" y="13">
                                         <field name="OP">EQ</field>
                                     </block>
@@ -452,7 +453,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade show active" id="codeVisible" role="tabpanel" aria-labelledby="codeVisible-tab">
+                <div class="tab-pane fade " id="codeVisible" role="tabpanel" aria-labelledby="codeVisible-tab">
                     <textarea id="code" name="code">
 
                 </textarea></div>
@@ -462,7 +463,7 @@
 
             <div class="col-md-6">
                 <div class="panel panel-default">
-                    <div class="row">
+                    <!-- <div class="row">
                         <div id="textHolder" class="col-md-12">
                             <p>Select a theme: <select onchange="selectTheme()" id=select>
                                 <option selected>default</option>
@@ -536,14 +537,18 @@
                                 <textarea id="displayCode" style="height: 480px; width: 600px; font-family: inherits"></textarea>
                             </div>
                         </div>
+                    </div> -->
+                    <div class="row">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bodyTextParent" onclick="textAreaForBody()">Add Body
+                          </button>
+
                     </div>
                     <div class="row" id="upHolder">
                         <div id="dataHolder" class="col-md-12">
-                            <div class="input-group mb-3 col-md-6">
+                            <div class="input-group mb-3 col-md-12">
                                 <span class="input-group-text" id="basic-addon1">Required Data</span>
                                 <input id="search-bar" type="search" class="form-control" placeholder="Search In Data" aria-label="Username" aria-describedby="basic-addon1" onkeyup="betterFunction()" />
                             </div>
-                            <div class="col-md-6"></div>
 
                         </div>
                         <div class="col-md-6">
@@ -565,7 +570,9 @@
                   </text>
                 </svg> -->
                         </div>
+                        <hr>
                         <!-- </div> -->
+                        <div class="col-md-5"></div>
                         <div class="col-md-2">
                             <br />
                             <button id="save" type="button" class="btn btn-success" onclick="addToToolbox()">
@@ -589,8 +596,26 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="bodyTextParent" tabindex="-1" role="dialog" aria-labelledby="Body Data">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add Body Data</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="bodyValue"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="changeBody()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
     <script type="module" src="/main.js"></script>
     <script type="text/javascript" src="https://developerapp.leadsquared.com/customapp/script.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>

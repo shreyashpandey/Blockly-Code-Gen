@@ -5,12 +5,12 @@
 
 #blocklyDiv {
     position: relative;
-    left: -250px;
+    left: -265px;
 }
 
 #dataHolder {
     display: block;
-    height: 40px;
+    height: auto;
     width: 100%;
     overflow: auto;
     border: 1px solid #ccc;
@@ -44,7 +44,12 @@
 
 #codeVisible {
     position: relative;
-    left: -250px;
+    left: -265px;
+}
+
+#bodyValue {
+    height: 300px;
+    width: 300px;
 }
 
 
@@ -78,4 +83,9 @@
 
 .blocklyTreeRow {
     height: initial;
+}
+
+#basic-addon1 {
+    background-color: dodgerblue;
+    color: white;
 }
