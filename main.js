@@ -1,5 +1,6 @@
 import "./style.css";
 import Blockly from "blockly";
+import '@blockly/block-plus-minus';
 import { FieldSlider } from "@blockly/field-slider";
 import FieldDate from "@blockly/field-date";
 import axios from "axios";
@@ -16,6 +17,16 @@ import "codemirror/addon/wrap/hardwrap.js";
 import "codemirror/addon/fold/foldcode.js";
 import "codemirror/addon/fold/brace-fold.js";
 import "codemirror/keymap/sublime.js"
+import { workspace } from "./services/workspaceInjection";
+import { debounce } from "./services/debouncedSearch"
+import { newDebouncedSearch } from "./services/debouncedSearch"
+import { callingTraverserLogic } from "./services/traverserLogic"
+import { workspaceChecker } from "./services/workspaceChecker";
+import { changeBody } from "./services/bodyModifier"
+
+// import { populateRandom } from '@blockly/dev-tools';
+// Add 10 random blocks to the workspace.
+
 // var CodeMirror = require("codemirror");
 // import * as Blockly from 'blockly';
 // import {registerTooltipExtension} from '@blockly/block-extension-tooltip';
@@ -30,6 +41,13 @@ import "codemirror/keymap/sublime.js"
 // blk.setAttribute("type", "more_custom_blocks");
 // blk.setAttribute("id", "more_custom_blocks");
 // document.getElementById("toolbox").appendChild(blk);
+
+Blockly.svgResize(workspace);
+console.log("Workspace", workspace);
+var toolbox = Blockly.getMainWorkspace().getToolbox();
+toolbox.getToolboxItems()[0];
+console.log("Toolbox", toolbox);
+
 var value = "// The bindings defined specifically in the Sublime Text mode\nvar bindings = {\n";
 var map = CodeMirror.keyMap.sublime;
 console.log("Map for Code Mirror", map);
@@ -38,49 +56,8 @@ for (var key in map) {
     if (key != "fallthrough" && val != "..." && (!/find/.test(val) || /findUnder/.test(val)))
         value += "  \"" + key + "\": \"" + val + "\",\n";
 }
-var workspace = Blockly.inject("blocklyDiv", {
-    toolbox: document.getElementById("toolbox"),
-    move: {
-        scrollbars: {
-            horizontal: true,
-            vertical: true,
-        },
-        drag: false,
-        wheel: false,
-    },
-    zoom: {
-        controls: true,
-        wheel: true,
-        startScale: 1.0,
-        maxScale: 3,
-        minScale: 0.3,
-        scaleSpeed: 1.2,
-        pinch: true,
-    },
-    trashcan: true,
-    // theme: Blockly.Theme.defineTheme('customisedDark', {
-    //     'base': Blockly.Themes.Classic,
-    //     'componentStyles': {
-    //         'workspaceBackgroundColour': '#1e1e1e',
-    //         'toolboxBackgroundColour': 'blackBackground',
-    //         'toolboxForegroundColour': '#fff',
-    //         'flyoutBackgroundColour': '#252526',
-    //         'flyoutForegroundColour': '#ccc',
-    //         'flyoutOpacity': 1,
-    //         'scrollbarColour': '#797979',
-    //         'insertionMarkerColour': '#fff',
-    //         'insertionMarkerOpacity': 0.3,
-    //         'scrollbarOpacity': 0.4,
-    //         'cursorColour': '#d0d0d0',
-    //         'blackBackground': '#333'
-    //     }
-    // })
 
-});
-console.log("Workspace", workspace);
-var toolbox = Blockly.getMainWorkspace().getToolbox();
-toolbox.getToolboxItems()[0];
-console.log("Toolbox", toolbox);
+console.log("New Workspace: " + workspace);
 // let blk = document.createElement("block");
 // blk.setAttribute("type", "custom_block");
 // blk.setAttribute("id", "custom_block");
@@ -134,7 +111,76 @@ const callingAPI = () => {
 //     console.log(err);
 //   });
 
-var reUsableBlocks = ["custom_variable", "function_caller", "newblock", "api_call"];
+// var reUsableBlocks = ["custom_variable", "function_caller", "newblock", "api_call"];
+Blockly.defineBlocksWithJsonArray([{
+        "type": "procedures_defnoreturn",
+        "message0": "%{BKY_PROCEDURES_DEFNORETURN_TITLE} %1 %2",
+        "message1": "%{BKY_PROCEDURES_DEFNORETURN_DO} %1",
+        "args0": [{
+                "type": "field_input",
+                "name": "NAME",
+                "text": "",
+            },
+            {
+                "type": "input_dummy",
+                "name": "TOP",
+            },
+        ],
+        "args1": [{
+            "type": "input_statement",
+            "name": "STACK",
+        }, ],
+        "style": "procedure_blocks",
+        "helpUrl": "%{BKY_PROCEDURES_DEFNORETURN_HELPURL}",
+        "tooltip": "%{BKY_PROCEDURES_DEFNORETURN_TOOLTIP}",
+        "extensions": [
+            "get_procedure_def_no_return",
+            "procedure_context_menu",
+            "procedure_rename",
+            "procedure_vars",
+        ],
+        "nextStatement": true,
+        "previousStatement": true,
+        "mutator": "procedure_def_mutator",
+    },
+    {
+        "type": "procedures_defreturn",
+        "message0": "%{BKY_PROCEDURES_DEFRETURN_TITLE} %1 %2",
+        "message1": "%{BKY_PROCEDURES_DEFRETURN_DO} %1",
+        "message2": "%{BKY_PROCEDURES_DEFRETURN_RETURN} %1",
+        "args0": [{
+                "type": "field_input",
+                "name": "NAME",
+                "text": "",
+            },
+            {
+                "type": "input_dummy",
+                "name": "TOP",
+            },
+        ],
+        "args1": [{
+            "type": "input_statement",
+            "name": "STACK",
+        }, ],
+        "args2": [{
+            "type": "input_value",
+            "align": "right",
+            "name": "RETURN",
+        }, ],
+        "style": "procedure_blocks",
+        "helpUrl": "%{BKY_PROCEDURES_DEFRETURN_HELPURL}",
+        "tooltip": "%{BKY_PROCEDURES_DEFRETURN_TOOLTIP}",
+        "extensions": [
+            "get_procedure_def_return",
+            "procedure_context_menu",
+            "procedure_rename",
+            "procedure_vars",
+        ],
+        "nextStatement": true,
+        "previousStatement": true,
+        "mutator": "procedure_def_mutator",
+    },
+]);
 Blockly.Blocks["string_length"] = {
     init: function() {
         // Blockly.Extensions.apply('custom-tooltip-extension', this, false);
@@ -169,14 +215,39 @@ Blockly.Blocks["main_function"] = {
         this.setHelpUrl("https://www.google.com");
     },
 };
+Blockly.Blocks["mod_main_function"] = {
+    init: function() {
+        this.appendDummyInput().appendField("main");
+        this.appendStatementInput("MAIN_FUNCTION").setCheck(null);
+        this.setColour(230);
+        this.setTooltip("");
+        // this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setHelpUrl("https://www.google.com");
+    },
+};
+Blockly.JavaScript["mod_main_function"] = function(block) {
+    let statements_main_function = Blockly.JavaScript.statementToCode(
+        block,
+        "MAIN_FUNCTION"
+    );
+    let mainCode = `   function main(queyString,body,callback){
+                (async () => {
+                ${statements_main_function}
+                    })();
+                    }`;
+    return mainCode;
+};
 Blockly.JavaScript["main_function"] = function(block) {
     let statements_main_function = Blockly.JavaScript.statementToCode(
         block,
         "MAIN_FUNCTION"
     );
-    let mainCode = `function main(queyString,body,callback){
-    ${statements_main_function}
-    }`;
+    let mainCode = `   function main(queyString,body,callback){
+                (async () => {
+                ${statements_main_function}
+                    })();
+                    }`;
     return mainCode;
 };
 Blockly.Blocks["fields_date"] = {
@@ -197,6 +268,7 @@ Blockly.Blocks["object_builder"] = {
         this.appendValueInput("Attribute").appendField("attribute");
         this.appendValueInput("Value").appendField("value");
         this.setOutput(true);
+        // this.setCollapsed(true);
     },
 };
 Blockly.JavaScript["object_builder"] = function(block) {
@@ -815,7 +887,7 @@ Blockly.JavaScript['procedures_defreturn'] = function(block) {
     }
     var code = 'function ' + funcName + '(' + args.join(', ') + ') {\n' +
         xfix1 + loopTrap + branch + xfix2 + returnValue + '}';
-    code = Blockly.JavaScript.scrub_(block, code);
+    // code = Blockly.JavaScript.scrub_(block, code);
     // Add % so as not to collide with helper functions in definitions list.
     Blockly.JavaScript.definitions_['%' + funcName] = code;
     return null;
@@ -1050,7 +1122,7 @@ Blockly.JavaScript["callback"] = function(block) {
 Blockly.Blocks["api_call"] = {
     init: function() {
         // .setCheck("String")
-        this.appendValueInput("=API_URL")
+        this.appendValueInput("API_URL")
             .appendField("API Call")
             .appendField(new Blockly.FieldTextInput("defaultText"), "functionName")
             .appendField("authorization-type")
@@ -1060,7 +1132,7 @@ Blockly.Blocks["api_call"] = {
                     ["Authorization-Bearer", "Authorization-Bearer"],
                     ["access/secret keys", "access/secret keys"],
                 ]),
-                "funcDropdown"
+                "authDropdown"
             )
             .appendField("URL");
         this.appendDummyInput()
@@ -1095,7 +1167,7 @@ Blockly.JavaScript["api_call"] = function(block) {
             Blockly.JavaScript.ORDER_FUNCTION_CALL
         ) || "''";
     let params =
-        Blockly.JavaScript.valueToCode(
+        Blockly.JavaScript.customisedValueToCode(
             block,
             "PARAMS",
             Blockly.JavaScript.ORDER_FUNCTION_CALL
@@ -1108,12 +1180,13 @@ Blockly.JavaScript["api_call"] = function(block) {
             Blockly.JavaScript.ORDER_FUNCTION_CALL
         ) || "''";
     let headerType =
-        Blockly.JavaScript.valueToCode(
+        Blockly.JavaScript.customisedValueToCode(
             block,
             "headers",
             Blockly.JavaScript.ORDER_FUNCTION_CALL
         ) || "''";
     let name = block.getFieldValue("functionName");
+    let method = block.getFieldValue("methods");
     const functionsPresent = localStorage.getItem("FunctionsPresent");
     if (functionsPresent == "") {
         let functions = [];
@@ -1129,24 +1202,24 @@ Blockly.JavaScript["api_call"] = function(block) {
       let options={
         url:${url},
         qs:${params},
-        method:"post",
+        method:${method},
         body:${body},
         headers:${headerType},
         json:true
       };
-      request.post(options,(err,res,body)=>{
+      request(options,(err,res,body)=>{
         if(err)
         reject(err);
         else
         {
           if(res.statusCode==200)
           {
-            ls.log.Info(${name} response,body);
+            ls.log.Info("${name} response",body);
             resolve(body);
           }
           else
           {
-            ls.log.Error(${name} exception message,res.body.ExceptionMessage);
+            ls.log.Error("${name} exception message",res.body.ExceptionMessage);
             reject(res.body.ExceptionMessage);
           }
         }
@@ -1154,7 +1227,115 @@ Blockly.JavaScript["api_call"] = function(block) {
     });
 }`;
 };
-
+Blockly.Blocks["mod_api_call"] = {
+    init: function() {
+        // .setCheck("String")
+        this.appendValueInput("API_URL")
+            .appendField("API Call")
+            .appendField(new Blockly.FieldTextInput("defaultText"), "functionName")
+            .appendField("authorization-type")
+            .appendField(
+                new Blockly.FieldDropdown([
+                    ["x-api-key", "x-api-key"],
+                    ["Authorization-Bearer", "Authorization-Bearer"],
+                    ["access/secret keys", "access/secret keys"],
+                ]),
+                "authDropdown"
+            )
+            .appendField("URL");
+        this.appendDummyInput()
+            .appendField("Method")
+            .appendField(
+                new Blockly.FieldDropdown([
+                    ["get", "get"],
+                    ["post", "post"],
+                    ["put", "put"],
+                    ["delete", "delete"],
+                ]),
+                "methods"
+            );
+        this.appendValueInput("Body").appendField("Body");
+        // .appendField(new Blockly.FieldMultilineInput("body"), "body");
+        this.appendValueInput("PARAMS")
+            .setCheck("String")
+            .appendField("Parameters");
+        this.appendValueInput("headers").setCheck("String").appendField("Headers");
+        this.setInputsInline(false);
+        this.setNextStatement(true);
+        this.setPreviousStatement(true);
+        // this.appendStatementInput("INSERTED").setCheck("Number");
+        this.setColour(160);
+        this.setTooltip("");
+    },
+};
+Blockly.JavaScript["mod_api_call"] = function(block) {
+    let url =
+        Blockly.JavaScript.valueToCode(
+            block,
+            "API_URL",
+            Blockly.JavaScript.ORDER_FUNCTION_CALL
+        ) || "''";
+    let params =
+        Blockly.JavaScript.customisedValueToCode(
+            block,
+            "PARAMS",
+            Blockly.JavaScript.ORDER_FUNCTION_CALL
+        ) || "''";
+    params = params.replaceAll(`"`, `\"`);
+    let body =
+        Blockly.JavaScript.customisedValueToCode(
+            block,
+            "Body",
+            Blockly.JavaScript.ORDER_FUNCTION_CALL
+        ) || "''";
+    let headerType =
+        Blockly.JavaScript.customisedValueToCode(
+            block,
+            "headers",
+            Blockly.JavaScript.ORDER_FUNCTION_CALL
+        ) || "''";
+    let name = block.getFieldValue("functionName");
+    let method = block.getFieldValue("methods");
+    const functionsPresent = localStorage.getItem("FunctionsPresent");
+    if (functionsPresent == "") {
+        let functions = [];
+        functions.push(name);
+        localStorage.setItem("FunctionsPresent", functions);
+    } else {
+        localStorage.setItem("FunctionsPresent", localStorage.getItem("FunctionsPresent").split(",").push(name));
+    }
+    // let headerType= block.getFieldValue("Parameters");s
+    return `async function ${name}(body) { 
+    return new Promise((resolve,reject)=>
+    {
+      let options={
+        url:${url},
+        qs:${params},
+        method:${method},
+        body:${body},
+        headers:${headerType},
+        json:true
+      };
+      request(options,(err,res,body)=>{
+        if(err)
+        reject(err);
+        else
+        {
+          if(res.statusCode==200)
+          {
+            ls.log.Info("${name} response",body);
+            resolve(body);
+          }
+          else
+          {
+            ls.log.Error("${name} exception message",res.body.ExceptionMessage);
+            reject(res.body.ExceptionMessage);
+          }
+        }
+      });
+    });
+}`;
+};
 
 Blockly.JavaScript["string_length"] = function(block) {
     // String or array length.
@@ -1201,20 +1382,9 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     tabSize: 2,
     value: ""
 });
-editor.setSize(800, 500);
+editor.setSize(null, 600);
 
 function codeEditor(code) {
-    // var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-    //     lineNumbers: true,
-    //     mode: "javascript",
-    //     keyMap: "sublime",
-    //     autoCloseBrackets: true,
-    //     matchBrackets: true,
-    //     showCursorWhenSelecting: true,
-    //     theme: "monokai",
-    //     tabSize: 2,
-    //     value: code
-    // });
     editor.getDoc().setValue(code);
 
 }
@@ -1223,7 +1393,7 @@ function runJS() {
     Blockly.JavaScript.addReservedWords("code");
     let code = Blockly.JavaScript.workspaceToCode(workspace);
     console.log("Top Blocks present in workspace", workspace.topBlocks_);
-    console.log("Function Value Required", workspace.topBlocks_[0]["inputList"][0]["fieldRow"][1]["value_"]);
+    // console.log("Function Value Required", workspace.topBlocks_[0]["inputList"][0]["fieldRow"][1]["value_"]);
     let functionValue = workspace.topBlocks_.map((tl) => {
         if (tl.inputList[0]["fieldRow"] != 0)
             tl.inputList[0]["fieldRow"][1];
@@ -1232,41 +1402,6 @@ function runJS() {
     // code = code.replace("\r\n", "\\r\\n");
     document.getElementById("code").value = code;
     codeEditor(code);
-    /************************** */
-    // var editor = CodeMirror.fromTextArea(document.getElementById("displayCode"), {
-    //     lineNumbers: true,
-    //     mode: "javascript",
-    //     keyMap: "sublime",
-    //     autoCloseBrackets: true,
-    //     matchBrackets: true,
-    //     showCursorWhenSelecting: true,
-    //     theme: "monokai",
-    //     tabSize: 2,
-    //     value: code
-    // });
-    // console.log(editor);
-    // var input = document.getElementById("select");
-
-    // function selectTheme() {
-    //     var theme = input.options[input.selectedIndex].textContent;
-    //     editor.setOption("theme", theme);
-    //     location.hash = "#" + theme;
-    // }
-    // var choice = (location.hash && location.hash.slice(1)) ||
-    //     (document.location.search &&
-    //         decodeURIComponent(document.location.search.slice(1)));
-    // if (choice) {
-    //     input.value = choice;
-    //     editor.setOption("theme", choice);
-    // }
-    // CodeMirror.on(window, "hashchange", function() {
-    //     var theme = location.hash.slice(1);
-    //     if (theme) {
-    //         input.value = theme;
-    //         selectTheme();
-    //     }
-    // });
-    /************************** */
     console.log("Generated Code", code);
     try {
         // var myInterpreter = new Interpreter(code, initFunc);
@@ -1497,7 +1632,7 @@ Blockly.JavaScript["controls_try"] = function(block) {
     var finalblock = Blockly.JavaScript.statementToCode(block, "FINAL");
     var code = "try {\n" + tryblock + "}\n";
     code +=
-        "catch(err){\n errorHandler(err.message);\n" +
+        "catch(err){\n callback(err,null);\n" +
         catchblock +
         "\n}" +
         "finally {\n" +
@@ -1505,7 +1640,19 @@ Blockly.JavaScript["controls_try"] = function(block) {
         "\n}";
     return code + "\n";
 };
-
+Blockly.Blocks[`generalUsedToBeValue`] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldTextInput("value"), value);
+        this.setColour(15);
+        this.setOutput(true, null);
+        this.setTooltip("");
+    },
+};
+Blockly.JavaScript[`generalUsedToBeValue`] = function(block) {
+    let code = block.getFieldValue(value);
+    return code;
+};
 
 // const callingApi=()=>{
 //   return new Promise((resolve,reject)=>{
@@ -1523,44 +1670,243 @@ Blockly.JavaScript["controls_try"] = function(block) {
 //   );
 // };
 
-const body = {
-    id: "Any",
-    joke: "Yoyo",
-    rating: "5",
-    type: "joke",
-    source: "joke",
-    created_at: "2017-03-27T10:00:00.000Z",
-    updated_at: "2017-03-27T10:00:00.000Z",
-    user: {
-        id: "Any",
-        name: "Any",
-        username: "Any",
-        email: "Any",
-        created_at: "2017-03-27T10:00:00.000Z",
-        updated_at: "2017-03-27T10:00:00.000Z",
-        avatar: "https://v2.jokeapi.dev/avatar/Any",
-        cover: "https://v2.jokeapi.dev/cover/Any",
-        bio: "Any",
-        website: "Any",
-        location: "Any",
-        facebook: "Any",
-        twitter: "Any",
-        After: {
-            id: "Any",
-            name: "Any",
-        },
+function textAreaForBody() {
+    document.getElementById("bodyTextParent").setAttribute("tabindex", "1");
+    document.getElementById("bodyTextParent").setAttribute("class", "modal");
+    document.getElementById("bodyTextParent").setAttribute("style", "display:block;");
+}
+
+function closeModal() {
+    document.getElementById("bodyTextParent").setAttribute("tabindex", "-1");
+    document.getElementById("bodyTextParent").setAttribute("class", "modal fade");
+    document.getElementById("bodyTextParent").setAttribute("style", "display:none;");
+}
+
+// function changeBody() {
+//     document.getElementById("bodyTextParent").setAttribute("tabindex", "-1");
+//     document.getElementById("bodyTextParent").setAttribute("class", "modal fade");
+//     document
+//         .getElementById("bodyTextParent")
+//         .setAttribute("style", "display:none;");
+//     let newbody = document.getElementById("bodyValue").value.trim(" ");
+//     // newbody = JSON.stringify(newbody);
+//     console.log("Body", JSON.parse(newbody));
+//     body = JSON.parse(newbody);
+//     console.log("New Body", body);
+//     console.log("Type of new body", typeof(body));
+//     callingTraverserLogic();
+// }
+
+let body = {
+    "Before": {
+        "ProspectID": "468eeaf9-2bc4-40e6-8aeb-e393191c37fa",
+        "ProspectAutoId": "26665",
+        "FirstName": "1",
+        "LastName": null,
+        "EmailAddress": "123@111.cc",
+        "Phone": null,
+        "Mobile": null,
+        "Source": "Contact Form 7",
+        "SourceMedium": "",
+        "SourceCampaign": "",
+        "ProspectStage": "Opportunity",
+        "Score": "0",
+        "EngagementScore": "0",
+        "ProspectActivityName_Max": "Lead Capture",
+        "ProspectActivityDate_Max": "2020-11-20 11:38:49",
+        "OwnerId": "6ba64831-b1c1-11e4-981b-22000a9700b4",
+        "ModifiedOn": "2021-10-11 17:15:58",
+        "mx_State": null,
+        "mx_Country": null,
+        "StageRottingFlagStatus": null,
+        "StageRottingFlagMessage": null,
+        "StageRottingFlagModifiedOn": null,
+        "StageRottingFlagLevel": null,
+        "QualityScore01": null,
+        "OwnerIdEmailAddress": "rizwanali@3ee13.com",
     },
-    comments: [{
-            id: "Any",
-            body: "Any",
-            created_at: "2017-03-27T10:00:00.000Z",
-        },
-        {
-            id: "Any2",
-            body: "Any2",
-            created_at: "2017-03-27T10:00:00.000Z",
-        },
-    ],
+    "After": {
+        "ProspectID": "468eeaf9-2bc4-40e6-8aeb-e393191c37fa",
+        "ProspectAutoId": "26665",
+        "FirstName": "1",
+        "LastName": null,
+        "EmailAddress": "123@111.cc",
+        "Phone": null,
+        "Mobile": null,
+        "Source": "Contact Form 7",
+        "SourceMedium": "",
+        "SourceCampaign": "",
+        "ProspectStage": "Prospect",
+        "Score": "0",
+        "EngagementScore": "0",
+        "ProspectActivityName_Max": "Lead Capture",
+        "ProspectActivityDate_Max": "2020-11-20 11:38:49",
+        "OwnerId": "6ba64831-b1c1-11e4-981b-22000a9700b4",
+        "ModifiedOn": "2021-10-11 17:16:05",
+        "mx_State": null,
+        "mx_Country": null,
+        "StageRottingFlagStatus": null,
+        "StageRottingFlagMessage": null,
+        "StageRottingFlagModifiedOn": null,
+        "StageRottingFlagLevel": null,
+        "QualityScore01": null,
+        "OwnerIdEmailAddress": "rizwanali@3ee13.com"
+    },
+    "Current": {
+        "OptedOutDate": null,
+        "ProspectActivityName_Min": null,
+        "ProspectID": "468eeaf9-2bc4-40e6-8aeb-e393191c37fa",
+        "ProspectAutoId": "26665",
+        "FirstName": "1",
+        "LastName": null,
+        "EmailAddress": "123@111.cc",
+        "Company": null,
+        "Origin": "Contact Form 7",
+        "Phone": null,
+        "Mobile": null,
+        "Fax": null,
+        "Website": null,
+        "TimeZone": null,
+        "Region": null,
+        "JobTitle": null,
+        "Source": "Contact Form 7",
+        "SourceMedium": "",
+        "Notes": null,
+        "SourceCampaign": "",
+        "SourceContent": "",
+        "DoNotEmail": "0",
+        "DoNotCall": "0",
+        "ProspectStage": "Prospect",
+        "Grade": null,
+        "Score": "0",
+        "Revenue": "234",
+        "EngagementScore": "0",
+        "TotalVisits": "0",
+        "PageViewsPerVisit": "0",
+        "AvgTimePerVisit": "0",
+        "RelatedProspectId": null,
+        "ProspectActivityId_Min": "8f0abe72-887f-4b7c-a492-536a8eb8fd13",
+        "ProspectActivityDate_Min": "2020-11-20 11:38:35",
+        "Web_Referrer": "",
+        "Web_RefKeyword": "",
+        "ProspectActivityId_Max": "0b9ce6ca-5c43-4172-8004-362f354bdb4b",
+        "ProspectActivityName_Max": "Lead Capture",
+        "ProspectActivityDate_Max": "2020-11-20 11:38:49",
+        "ImportTransactionId": null,
+        "RelatedLandingPageId": null,
+        "FirstLandingPageSubmissionId": null,
+        "FirstLandingPageSubmissionDate": null,
+        "OwnerId": "6ba64831-b1c1-11e4-981b-22000a9700b4",
+        "CreatedBy": "6ba64831-b1c1-11e4-981b-22000a9700b4",
+        "CreatedOn": "2020-11-20 11:38:35",
+        "ModifiedBy": "6ba64831-b1c1-11e4-981b-22000a9700b4",
+        "ModifiedOn": "2021-10-11 17:16:05",
+        "LeadConversionDate": "2020-11-20 11:38:35",
+        "StatusCode": "0",
+        "StatusReason": "0",
+        "DeletionStatusCode": "0",
+        "IsLead": "1",
+        "mx_Street1": null,
+        "mx_Street2": null,
+        "mx_City": null,
+        "mx_State": null,
+        "mx_Country": null,
+        "mx_Zip": null,
+        "mx_Geography": null,
+        "mx_DOB": null,
+        "mx_Anniversary": null,
+        "mx_FaceBookURL": null,
+        "mx_TwitterURL": null,
+        "mx_LinkedInURL": null,
+        "JobTitleLevel": null,
+        "mx_Your_Intrest": null,
+        "mx_Lead_Date": null,
+        "mx_lead_Id": null,
+        "mx_State_List": null,
+        "mx_StateCus": null,
+        "mx_StateCs": null,
+        "mx_withothers": null,
+        "mx_PhoneA_NuMBER": null,
+        "mx_LeadHidden": null,
+        "mx_Source_term": null,
+        "mx_ModifiedTime": null,
+        "mx_CreationTime": null,
+        "mx_Budget_Min": null,
+        "mx_Budget_Max": null,
+        "mx_Email_Source": null,
+        "mx_Interested_in": null,
+        "mx_Prefer": null,
+        "mx_Project": null,
+        "mx_Want_Property": null,
+        "mx_Wants_within": null,
+        "mx_Website_Source": null,
+        "mx_Intereted_in": null,
+        "mx_date_and_time": null,
+        "mx_datte": null,
+        "mx_dandt": null,
+        "mx_Engagement_Score_Custom": null,
+        "mx_CR_Child_First_Name": null,
+        "mx_CR_Entry_Year_Level": null,
+        "mx_CR_Entry_Year": null,
+        "mx_Contact_Suburb": null,
+        "LastModifiedOn": "2021-10-11 17:16:05",
+        "mx_Multi_Select": "2",
+        "mx_Student_Name": null,
+        "mx_Schedule": null,
+        "mx_Source_MarketPlace": null,
+        "mx_Secondary_Email": null,
+        "mx_TimeRange": null,
+        "mx_Dependent": null,
+        "mx_Select_Dep": null,
+        "mx_Online_Lead_Type": null,
+        "mx_Regions": null,
+        "mx_uid": null,
+        "mx_Date_of_birth": null,
+        "mx_testdemo": null,
+        "mx_multi": null,
+        "NotableEvent": "Modified",
+        "NotableEventdate": "2021-10-11 17:16:05",
+        "SourceReferrer": "",
+        "LastVisitDate": "2020-11-20 11:38:49",
+        "LeadAge": "325",
+        "PhotoUrl": null,
+        "StageRottingFlagStatus": null,
+        "StageRottingFlagMessage": null,
+        "StageRottingFlagModifiedOn": null,
+        "StageRottingFlagAdditionalInfo": null,
+        "StageRottingFlagLevel": null,
+        "MailingPreferences": null,
+        "DoNotTrack": null,
+        "Latitude": null,
+        "Longitude": null,
+        "TwitterId": null,
+        "FacebookId": null,
+        "LinkedInId": null,
+        "SkypeId": null,
+        "GTalkId": null,
+        "GooglePlusId": null,
+        "QualityScore01": null,
+        "CurrentOptInStatus": null,
+        "OptInDate": null,
+        "OptInDetails": null,
+        "LastOptInEmailSentDate": null,
+        "ConversionReferrerURL": null,
+        "SourceReferrerURL": null,
+        "SourceIPAddress": null,
+        "LeadLastModifiedOn": "2021-10-11 17:16:05",
+        "OwnerIdName": "rizwan ali",
+        "OwnerIdEmailAddress": "rizwanali@3ee13.com",
+        "Groups": "",
+        "CreatedByName": "rizwan ali",
+        "ModifiedByName": "rizwan ali",
+        "Total": "1",
+        "FlagLevel": null,
+        "FlagAdditionalInfo": null,
+        "FlagStatus": null,
+        "FlagMessage": null,
+        "FlaggingModifiedOn": null,
+        "CanUpdate": "true"
+    }
 };
 const debouncedSearch = () => {
     const val = document.getElementById("search").value;
@@ -1776,94 +2122,116 @@ function arraySearcher1(obj, value, trailString) {
         } else return "";
     }
 }
+/***************************TraverserLogic Here ********************************/
 
-let keyPathPair = {};
-let keyValuePair = {};
+// let keyPathPair = {};
+// let keyValuePair = {};
 
-function process(key, value, tstr) {
-    console.log(
-        key +
-        " : " +
-        value +
-        " : " +
-        tstr +
-        "=>" +
-        key +
-        " : " +
-        typeof value +
-        " : " +
-        Array.isArray(value)
-    );
-    if (keyPathPair[key]) {
-        keyPathPair[key].push(tstr + "=>" + key);
-    } else {
-        keyPathPair[key] = [tstr + "=>" + key];
-    }
-    if (keyValuePair[key]) {
-        if (typeof value == "object") {
-            keyValuePair[key].push(JSON.stringify(value));
-        } else keyValuePair[key].push(value);
-    } else {
-        if (typeof value == "object") {
-            keyValuePair[key] = [JSON.stringify(value)];
-        } else keyValuePair[key] = [value];
-    }
-}
+// function callingTraverserLogic() {
+//     function process(key, value, tstr) {
+//         console.log(
+//             key +
+//             " : " +
+//             value +
+//             " : " +
+//             tstr +
+//             "=>" +
+//             key +
+//             " : " +
+//             typeof value +
+//             " : " +
+//             Array.isArray(value)
+//         );
+//         if (keyPathPair[key]) {
+//             keyPathPair[key].push(tstr + "=>" + key);
+//         } else {
+//             keyPathPair[key] = [tstr + "=>" + key];
+//         }
+//         if (keyValuePair[key]) {
+//             if (typeof value == "object") {
+//                 keyValuePair[key].push(JSON.stringify(value));
+//             } else keyValuePair[key].push(value);
+//         } else {
+//             if (typeof value == "object") {
+//                 keyValuePair[key] = [JSON.stringify(value)];
+//             } else keyValuePair[key] = [value];
+//         }
+//         return tstr + "=>" + key;
+//     }
 
-let ts = "body";
+//     let ts = "body";
+//     //Need to put traverse and process in a closure
 
-function traverse(o, func) {
-    for (var i in o) {
-        func.apply(this, [i, o[i], ts]);
-        if (o[i] !== null && typeof o[i] == "object") {
-            //going one step down in the object tree!!
-            ts = ts + "=>" + i;
-            traverse(o[i], func);
-        }
-    }
-}
+//     // function traverse(o, func) {
+//     //     for (var i in o) {
+//     //         func.apply(this, [i, o[i], ts]);
+//     //         if (o[i] !== null && typeof o[i] == "object") {
+//     //             ts = ts + "=>" + i;
+//     //             traverse(o[i], func);
+//     //         }
+//     //     }
+//     // }
+//     let tra = "";
 
-//that's all... no magic, no bloated framework
-traverse(body, process);
-console.log(keyPathPair);
-console.log(keyValuePair);
+//     function traverse(o) {
 
-const newDebouncedSearch = () => {
-    while (document.getElementById("search-list").firstChild) {
-        document
-            .getElementById("search-list")
-            .removeChild(document.getElementById("search-list").firstChild);
-    }
-    const searchString = document.getElementById("search-bar").value;
-    console.log("Search String", searchString);
-    // console.log(Object.keys(keyPathPair));
-    // console.log(Object.values(Object.keys(keyPathPair).filter((f) => f == searchString)[0]));
-    const lists = Object.entries(keyPathPair)
-        .filter((m) => m[0] == searchString)
-        .map((m) => m[1])[0]
-        .map((m) => {
-            console.log(m);
-            let li = document.createElement("li");
-            li.setAttribute("class", "list-group-item");
-            li.setAttribute("style", "word-wrap: break-word;")
-            li.setAttribute("draggable", true);
-            li.setAttribute("id", m.replaceAll("=>", "_"));
-            li.setAttribute("ondragstart", "drag(event)");
-            li.innerHTML = `${m}`;
-            document.getElementById("search-list").appendChild(li);
-        });
-};
-const debounce = function(fn, d) {
-    let timer;
-    return function() {
-        let context = this,
-            args = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            newDebouncedSearch.apply(context, arguments);
-        }, d);
-    };
-};
+//         for (var i in o) {
+//             if (!!o[i] && typeof(o[i]) == "object") {
+//                 // console.log(i, o[i]);
+//                 tra = process(i, o[i], ts);
+//                 traverse(o[i]);
+//             } else {
+//                 process(i, o[i], tra);
+//                 // console.log(i, o[i]);
+//             }
+//         }
+//     }
+//     traverse(body);
+//     // traverse(body, process);
+//     console.log(keyPathPair);
+//     console.log(keyValuePair);
+// }
+// callingTraverserLogic();
+
+/** ****************************************************************/
+/*****************************************Debounce Logic was commented ******************************************/
+// const newDebouncedSearch = () => {
+//     while (document.getElementById("search-list").firstChild) {
+//         document
+//             .getElementById("search-list")
+//             .removeChild(document.getElementById("search-list").firstChild);
+//     }
+//     const searchString = document.getElementById("search-bar").value;
+//     console.log("Search String", searchString);
+//     // console.log(Object.keys(keyPathPair));
+//     // console.log(Object.values(Object.keys(keyPathPair).filter((f) => f == searchString)[0]));
+//     const lists = Object.entries(keyPathPair)
+//         .filter((m) => m[0] == searchString)
+//         .map((m) => m[1])[0]
+//         .map((m) => {
+//             console.log(m);
+//             let li = document.createElement("li");
+//             li.setAttribute("class", "list-group-item");
+//             li.setAttribute("style", "word-wrap: break-word;")
+//             li.setAttribute("draggable", true);
+//             li.setAttribute("id", m.replaceAll("=>", "#"));
+//             li.setAttribute("ondragstart", "drag(event)");
+//             li.innerHTML = `${m}`;
+//             document.getElementById("search-list").appendChild(li);
+//         });
+// };
+// const debounce = function(fn, d) {
+//     let timer;
+//     return function() {
+//         let context = this,
+//             args = arguments;
+//         clearTimeout(timer);
+//         timer = setTimeout(() => {
+//             newDebouncedSearch.apply(context, arguments);
+//         }, d);
+//     };
+// };
+/************************************************************************************************ */
 const varForToolbox = () => {
     document.getElementById("dataHolder").style.display = "block";
     document.getElementById("dropBox").style.display = "block";
@@ -1879,6 +2247,8 @@ const betterFunction = debounce(newDebouncedSearch, 500);
 window.varForToolbox = varForToolbox;
 window.codeArea = codeArea;
 window.betterFunction = betterFunction;
+window.textAreaForBody = textAreaForBody;
+window.closeModal = closeModal;
 // window.debouncedSearch = debouncedSearch;
 function allowDrop(ev) {
     ev.preventDefault();
@@ -1929,7 +2299,7 @@ function updatingToolbox(id) {
     // });
     let block_name = `usedToBeValue${id}`;
     let toolBoxid = "toolbox"
-    let block_categoryName = "TO-BEUsed"
+    let block_categoryName = "Reuse"
 
     var xml;
     xml = '<block type=' + block_name + '></block>';
@@ -1943,6 +2313,16 @@ localStorage.setItem("FunctionsPresent", []);
 localStorage.setItem("VariablesPresent", []);
 
 function addToToolbox() {
+    document.getElementById("blocks-tab").classList.add("active");
+    document.getElementById("blocks").classList.add("show");
+    document.getElementById("blocks").classList.add("active");
+    document.getElementById("code-tab").classList.remove("active");
+    document.getElementById("codeVisible").classList.remove("show");
+    document.getElementById("codeVisible").classList.remove("active");
+    document.getElementById("requestBody").classList.remove("show");
+    document.getElementById("requestBody").classList.remove("active");
+    document.getElementById("requestBody-tab").classList.remove("active");
+    Blockly.svgResize(workspace);
     let childNodes = document.getElementById("dropBox").childNodes;
     let lS = localStorage.getItem("UsedValuesFromBody");
     if (lS == "") {
@@ -1971,7 +2351,7 @@ function creatingBlockAndGenerator(id) {
     Blockly.Blocks[`usedToBeValue${id}`] = {
         init: function() {
             this.appendDummyInput()
-                .appendField(new Blockly.FieldTextInput(id.replaceAll("_", ".")), id);
+                .appendField(new Blockly.FieldTextInput(id.replaceAll("#", ".")), id);
             this.setColour(15);
             this.setOutput(true, null);
             this.setTooltip("");
@@ -1984,33 +2364,35 @@ function creatingBlockAndGenerator(id) {
     updatingToolbox(id);
 }
 window.setInterval(() => workspaceChecker(), 15000);
+/************************** WorkspaceChecker ********************************  */
+// function workspaceChecker() {
+//     let topBlocks = workspace.topBlocks_;
+//     console.log("Workspace", workspace);
+//     let variableStorage = [],
+//         functionStorage = [];
+//     let filteredBlocks = topBlocks.filter((tB) => reUsableBlocks.includes(tB.type));
+//     if (filteredBlocks.length != 0) {
+//         console.log("Workspace is not empty");
+//         filteredBlocks = filteredBlocks.map((fB) => {
+//             if (fB.type == "api_call") {
+//                 functionStorage.push(fB["inputList"][0]["fieldRow"][1]["value_"]);
+//                 localStorage.setItem("FunctionsPresent", functionStorage);
 
-function workspaceChecker() {
-    let topBlocks = workspace.topBlocks_;
-    let variableStorage = [],
-        functionStorage = [];
-    let filteredBlocks = topBlocks.filter((tB) => reUsableBlocks.includes(tB.type));
-    if (filteredBlocks.length != 0) {
-        console.log("Workspace is not empty");
-        filteredBlocks = filteredBlocks.map((fB) => {
-            if (fB.type == "api_call") {
-                functionStorage.push(fB["inputList"][0]["fieldRow"][1]["value_"]);
-                localStorage.setItem("FunctionsPresent", functionStorage);
+//             } else {
+//                 console.log("Variables Workspace Details", fB["inputList"][0]["fieldRow"][1]["value_"]);
+//                 variableStorage.push(fB["inputList"][0]["fieldRow"][1]["value_"]);
+//                 localStorage.setItem("VariablesPresent", variableStorage);
+//             }
 
-            } else {
-                console.log("Variables Workspace Details", fB["inputList"][0]["fieldRow"][1]["value_"]);
-                variableStorage.push(fB["inputList"][0]["fieldRow"][1]["value_"]);
-                localStorage.setItem("VariablesPresent", variableStorage);
-            }
-
-        })
-    }
-    let variables = localStorage.getItem("VariablesPresent").split(",");
-    let functions = localStorage.getItem("FunctionsPresent").split(",");
-    if (variables == "" && functions == "") {
-        console.log("Please create a function or variable first");
-    }
-}
+//         })
+//     }
+//     let variables = localStorage.getItem("VariablesPresent").split(",");
+//     let functions = localStorage.getItem("FunctionsPresent").split(",");
+//     if (variables == "" && functions == "") {
+//         console.log("Please create a function or variable first");
+//     }
+// }
+/************************************************************************************************ */
 
 function toggleTab(e) {
     console.log("Toggling", e);
@@ -2020,22 +2402,44 @@ function toggleTab(e) {
         document.getElementById("codeVisible").classList.add("active");
         document.getElementById("blocks").classList.remove("show");
         document.getElementById("blocks").classList.remove("active");
+        document.getElementById("blocks-tab").classList.remove("active");
+        document.getElementById("requestBody").classList.remove("show");
+        document.getElementById("requestBody").classList.remove("active");
+        document.getElementById("requestBody-tab").classList.remove("active");
     } else if (e.target.id == "blocks-tab") {
         document.getElementById("blocks-tab").classList.add("active");
         document.getElementById("blocks").classList.add("show");
         document.getElementById("blocks").classList.add("active");
+        document.getElementById("code-tab").classList.remove("active");
         document.getElementById("codeVisible").classList.remove("show");
         document.getElementById("codeVisible").classList.remove("active");
+        document.getElementById("requestBody").classList.remove("show");
+        document.getElementById("requestBody").classList.remove("active");
+        document.getElementById("requestBody-tab").classList.remove("active");
     } else if (e.target.id == "settings-tab") {
         document.getElementById("settings-tab").classList.add("active");
         document.getElementById("settings").classList.add("show");
         document.getElementById("settings").classList.add("active");
+        document.getElementById("requestBody").classList.remove("show");
+        document.getElementById("requestBody").classList.remove("active");
+    } else if (e.target.id == "requestBody-tab") {
+        document.getElementById("requestBody-tab").classList.add("active");
+        document.getElementById("requestBody").classList.add("show");
+        document.getElementById("requestBody").classList.add("active");
+        document.getElementById("codeVisible").classList.remove("show");
+        document.getElementById("codeVisible").classList.remove("active");
+        document.getElementById("code-tab").classList.remove("active");
+        document.getElementById("blocks").classList.remove("show");
+        document.getElementById("blocks").classList.remove("active");
+        document.getElementById("blocks-tab").classList.remove("active");
     }
 }
+
 window.toggleTab = toggleTab;
 window.addToToolbox = addToToolbox;
 window.deleteList = deleteList;
 window.allowDrop = allowDrop;
 window.drag = drag;
 window.drop = drop;
+window.changeBody = changeBody;
 // window.newDebouncedSearch = newDebouncedSearch;

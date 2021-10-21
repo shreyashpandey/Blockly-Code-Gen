@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <script src="acorn_interpreter.js"></script>
+    <script src="blockly_compressed.js"></script>
+    <script src="javascript_compressed.js"></script> -->
+
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./node_modules/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="./node_modules/codemirror/addon/fold/foldgutter.css">
+    <link rel="stylesheet" href="./node_modules/codemirror/addon/dialog/dialog.css">
+    <link rel="stylesheet" href="./node_modules/codemirror/theme/monokai.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>AutoLocks</title>
+</head>
+
+<body>
+    <!-- <div id="app"></div> -->
+    <div class="container-flidic">
+        <div class="row">
+            <div class="col-md-8 addmargin">
+                <div id="tabParent">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="blocks-tab" data-bs-toggle="tab" data-bs-target="#blocks" type="button" role="tab" aria-controls="blocks" aria-selected="true" onclick="toggleTab(event)">Blocks</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="code-tab" data-bs-toggle="tab" data-bs-target="#codeVisible" type="button" role="tab" aria-controls="codeVisible" aria-selected="false" onclick="toggleTab(event),runJS()">Code</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false" onclick="toggleTab(event)">Settings</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="blocks" role="tabpanel" aria-labelledby="blocks-tab">
+                        
+                            
+                                <div id="blocklyDiv" style="height: 580px; width: 900px !important;"></div>
+                                <xml id="toolbox" style="display: none">
+                                    <category name="BaseLogic" css-icon="fa fa-toggle-on">
+                                        <block type="controls_if"></block>
+                                        <block type="logic_compare" id="g:*8M4.TABu,2y5oj}4N" x="16" y="13">
+                                            <field name="OP">EQ</field>
+                                        </block>
+                                        <block type="logic_operation" id="Ks0Kh^{3R.Xx^SKz$)Bu" x="15" y="64">
+                                            <field name="OP">AND</field>
+                                        </block>
+                                        <block type="logic_negate" id="49bd?@4Lyznq+Wb$`ZxD" x="14" y="112"></block>
+                                        <block type="logic_boolean" id="|1pN|op,j?lWZFMXSVGp" x="18" y="169">
+                                            <field name="BOOL">TRUE</field>
+                                        </block>
+                                        <block type="logic_ternary" id="}gF$cuX4lI-,9R~K+zK5" x="17" y="213"></block>
+                                    </category>
+                                    <category name="BasicLoop" css-icon="fa fa-repeat">
+                                        <variables>
+                                            <variable id="SPZHIJ)-R#iV%K/=[dT2">j</variable>
+                                            <variable id="JL=MU%XtTGsa.#X3/~)?">k</variable>
+                                            <variable id="-%g[yQ)6wC;Q8)6)Sn/R">m</variable>
+                                        </variables>
+                                        <block type="controls_repeat_ext" id="]9YL|nnb%d]Y?NA2rV9|" x="163" y="-60">
+                                            <value name="TIMES">
+                                                <shadow type="math_number" id="[F9oA7@c#+|R@~*hz,Y5">
+                                                    <field name="NUM">10</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="controls_whileUntil" id="$i5B4SxC!%RVW*iw$!/k" x="157" y="49">
+                                            <field name="MODE">WHILE</field>
+                                        </block>
+                                        <block type="controls_for" id="{3t?R71/ovQy10;dI#4u" x="161" y="149">
+                                            <field name="VAR" id="SPZHIJ)-R#iV%K/=[dT2">j</field>
+                                            <value name="FROM">
+                                                <shadow type="math_number" id="Le+UNo`;?5Ht[4CE5VtD">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="TO">
+                                                <shadow type="math_number" id="h~qZ)6e1m|:uK?8;3]i}">
+                                                    <field name="NUM">10</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="BY">
+                                                <shadow type="math_number" id="ygW1H(UJ+u8cOjqK5^fu">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="controls_forEach" id="oX-){]ZgcpsmLZyL1@Gz" x="165" y="266">
+                                            <field name="VAR" id="-%g[yQ)6wC;Q8)6)Sn/R">m</field>
+                                        </block>
+                                        <block type="controls_forEach" id="acpGm^An%*)Q0pM-zmR|" x="164" y="358">
+                                            <field name="VAR" id="JL=MU%XtTGsa.#X3/~)?">k</field>
+                                            <statement name="DO">
+                                                <block type="controls_if" id="ubEji-xf2I7{H{C:JI8O">
+                                                    <statement name="DO0">
+                                                        <block type="controls_flow_statements" id="F)eLxCec[3zzTZ=}f8#J">
+                                                            <field name="FLOW">BREAK</field>
+                                                        </block>
+                                                    </statement>
+                                                </block>
+                                            </statement>
+                                        </block>
+                                    </category>
+                                    <category name="BasicMath" css-icon="fa fa-calculator">
+                                        <block type="math_number" id="lMG8[Aw9B?/OG^:4o2rH" x="158" y="49">
+                                            <field name="NUM">123</field>
+                                        </block>
+                                        <block type="math_arithmetic" id="eYX+$a=Kef?%uTWSH_IE" x="147" y="92">
+                                            <field name="OP">ADD</field>
+                                            <value name="A">
+                                                <shadow type="math_number" id="GKovVrH1*Ra3fZwtfhIK">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="B">
+                                                <shadow type="math_number" id="-)})S)e:3J@0Xlg6f6b.">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_single" id="F8aCHV%%G-7./14o[o#Z" x="148" y="146">
+                                            <field name="OP">ROOT</field>
+                                            <value name="NUM">
+                                                <shadow type="math_number" id="sO0|}D~]fO42*`E?H^M%">
+                                                    <field name="NUM">9</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_trig" id="{9R#V1)n%EzP~cOap,{`" x="152" y="200">
+                                            <field name="OP">SIN</field>
+                                            <value name="NUM">
+                                                <shadow type="math_number" id="Xs{I-`2Vn]!:IqBK_U#{">
+                                                    <field name="NUM">45</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_constant" id="OpF=6*S*0$51#Z=[ZOE5" x="162" y="240">
+                                            <field name="CONSTANT">PI</field>
+                                        </block>
+                                        <block type="math_number_property" id="1`pD07zl4Nl8!.=^ZSm6" x="151" y="281">
+                                            <mutation divisor_input="false"></mutation>
+                                            <field name="PROPERTY">EVEN</field>
+                                            <value name="NUMBER_TO_CHECK">
+                                                <shadow type="math_number" id="588VmPAYnE=s[8*D|XcS">
+                                                    <field name="NUM">0</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_round" id="B:]u_jjJ,x!xO]YAKQQ:" x="142" y="337">
+                                            <field name="OP">ROUND</field>
+                                            <value name="NUM">
+                                                <shadow type="math_number" id="]1hB=Ry,:*?V05IPKm=_">
+                                                    <field name="NUM">3.1</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_on_list" id="H!^PQH%=WbfH6XQO9X(m" x="134" y="385">
+                                            <mutation op="SUM"></mutation>
+                                            <field name="OP">SUM</field>
+                                        </block>
+                                        <block type="math_modulo" id="XDQ*dQi]O^.9=8`f8$Ys" x="135" y="428">
+                                            <value name="DIVIDEND">
+                                                <shadow type="math_number" id="Fx$ZUUKFVWh}M`Tlq=%J">
+                                                    <field name="NUM">64</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="DIVISOR">
+                                                <shadow type="math_number" id="7rmQE26HJmFeVlT9W3%+">
+                                                    <field name="NUM">10</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_constrain" id="_,+_A3Mgqq!dhI,cv[2`" x="136" y="486">
+                                            <value name="VALUE">
+                                                <shadow type="math_number" id="UlI`wqBbIbYzL,!o]pqY">
+                                                    <field name="NUM">50</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="LOW">
+                                                <shadow type="math_number" id="Z2,F`dY9#}Sx3==PvxO?">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="HIGH">
+                                                <shadow type="math_number" id="-UF1}3c3`bV,ltKq#@5a">
+                                                    <field name="NUM">100</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_random_int" id="cBv8|v@=SRXG[L{Sr[_." x="125" y="544">
+                                            <value name="FROM">
+                                                <shadow type="math_number" id="!/_#MB#S16N?.r[5b1Z_">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="TO">
+                                                <shadow type="math_number" id="jcBpKj.ECtHE6?Od1=Tg">
+                                                    <field name="NUM">100</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="math_random_float" id="A)sfkk4eQeJtn7V6!Ro=" x="127" y="594"></block>
+                                        <block type="math_atan2" id="0~$+vy5VGa38e8;v8R`{" x="122" y="630">
+                                            <value name="X">
+                                                <shadow type="math_number" id="bFjd4=3@`@:%*b:NfqWc">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                            <value name="Y">
+                                                <shadow type="math_number" id="r0~D|nK.O,[b`7?|*s@P">
+                                                    <field name="NUM">1</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                    </category>
+                                    <category name="BasicLists" css-icon="fa fa-list">
+                                        <variables>
+                                            <variable id="9~YCUs090|T9d/ZOv~ou">list</variable>
+                                        </variables>
+                                        <block type="lists_create_with" id="5PpWRJ{d;HV{e#Eb_MbZ" x="-609" y="-63">
+                                            <mutation items="0"></mutation>
+                                        </block>
+                                        <block type="lists_create_with" id="?k6YDx/Sc~xQ_LH[5-aD" x="-616" y="-20">
+                                            <mutation items="3"></mutation>
+                                        </block>
+                                        <block type="lists_repeat" id="~Y#;5^^N;d89Ex+=V3=D" x="-614" y="71">
+                                            <value name="NUM">
+                                                <shadow type="math_number" id=")k{K+RB:ZxRLu*R*8dJ+">
+                                                    <field name="NUM">5</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="lists_length" id="C;er9V{S}=[e(),W;3S5" x="-614" y="129"></block>
+                                        <block type="lists_isEmpty" id="QQ{:VC2WS7mnh39+_=`}" x="-614" y="176"></block>
+                                        <block type="lists_indexOf" id="R1uB.$rq9kn~IrI~n#Uc" x="-616" y="224">
+                                            <field name="END">FIRST</field>
+                                            <value name="VALUE">
+                                                <block type="variables_get" id="]MR)_7m]{EIE@9tQ`Ipq">
+                                                    <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                        <block type="lists_getIndex" id="b7Mbri6_|TyCR[um}gF]" x="-623" y="274">
+                                            <mutation statement="false" at="true"></mutation>
+                                            <field name="MODE">GET</field>
+                                            <field name="WHERE">FROM_START</field>
+                                            <value name="VALUE">
+                                                <block type="variables_get" id="M1~KF_!F|7C:r]{nD`6m">
+                                                    <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                        <block type="lists_setIndex" id="@30CE3WYUa8FhY62LUVD" x="-616" y="326">
+                                            <mutation at="true"></mutation>
+                                            <field name="MODE">SET</field>
+                                            <field name="WHERE">FROM_START</field>
+                                            <value name="LIST">
+                                                <block type="variables_get" id="c.$jzIQofq7hC:4}=m:;">
+                                                    <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                        <block type="lists_getSublist" id="UY1}9fG0Thi/xHK,YV4|" x="-630" y="380">
+                                            <mutation at1="true" at2="true"></mutation>
+                                            <field name="WHERE1">FROM_START</field>
+                                            <field name="WHERE2">FROM_START</field>
+                                            <value name="LIST">
+                                                <block type="variables_get" id="+etM|@V,l.WOu3xj!wT#">
+                                                    <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                        <block type="lists_split" id="uExZK=*^{L_P}rBaNIr9" x="-632" y="439">
+                                            <mutation mode="SPLIT"></mutation>
+                                            <field name="MODE">SPLIT</field>
+                                            <value name="DELIM">
+                                                <shadow type="text" id="$8;qi4{3DCzktB3LXlL*">
+                                                    <field name="TEXT">,</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="lists_sort" id="B4cdN[PTO%92nf?d-=8)" x="-628" y="489">
+                                            <field name="TYPE">NUMERIC</field>
+                                            <field name="DIRECTION">1</field>
+                                        </block>
+                                        <block type="lists_reverse" id="^K?;F9wSV;O|XF=[0921" x="-628" y="527"></block>
+                                    </category>
+                                    <category name="BasicText" css-icon="fa fa-font">
+                                        <variables>
+                                            <variable id="~Vs1Ke|gzk:*)*p,Z+Sm">item</variable>
+                                            <variable id="N7N=kd/EjIAIN~=!%0oW">text</variable>
+                                        </variables>
+                                        <block type="text" id="dj4pq)FYsD5SUnzHK)8W" x="-490" y="16">
+                                            <field name="TEXT"></field>
+                                        </block>
+                                        <block type="text_multiline" id="$bF,l!*j+D4EOrr%{W`J" x="-501" y="54">
+                                            <field name="TEXT"></field>
+                                        </block>
+                                        <block type="text_join" id="?sixV,kTWOAtv06aG*f]" x="-500" y="99">
+                                            <mutation items="2"></mutation>
+                                        </block>
+                                        <block type="text_append" id=":;;XH!`k[4`zA;J6m7dL" x="-493" y="167">
+                                            <field name="VAR" id="~Vs1Ke|gzk:*)*p,Z+Sm">item</field>
+                                            <value name="TEXT">
+                                                <shadow type="text" id="u7[#2n5K$5S)ZP@gMP!v">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_length" id="ba9$,N~+15.;k:6|TwR1" x="-496" y="211">
+                                            <value name="VALUE">
+                                                <shadow type="text" id="|V-Bmh^D~#gp(ZRPPa%:">
+                                                    <field name="TEXT">abc</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_isEmpty" id="qRLesDHIszRPpcLABYSl" x="-494" y="249">
+                                            <value name="VALUE">
+                                                <shadow type="text" id="@63vl@4(~!/e-AqhqIcy">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_indexOf" id="N2NKIaAAZr#rV_QJX:|r" x="-515" y="300">
+                                            <field name="END">FIRST</field>
+                                            <value name="VALUE">
+                                                <block type="variables_get" id="F?:vGhh2i;B:jOD}7iu|">
+                                                    <field name="VAR" id="N7N=kd/EjIAIN~=!%0oW">text</field>
+                                                </block>
+                                            </value>
+                                            <value name="FIND">
+                                                <shadow type="text" id="UL;nlkWA!htD6:~lqHvp">
+                                                    <field name="TEXT">abc</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_charAt" id="#l@F8Z,rtqAbm~`s$TCi" x="-475" y="345">
+                                            <mutation at="true"></mutation>
+                                            <field name="WHERE">FROM_START</field>
+                                            <value name="VALUE">
+                                                <block type="variables_get" id=";+nA_f8Ox=TsryqnfK-p">
+                                                    <field name="VAR" id="N7N=kd/EjIAIN~=!%0oW">text</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                        <block type="text_changeCase" id="M=llf_xD+L3(QMSmSSi}" x="-504" y="419">
+                                            <field name="CASE">UPPERCASE</field>
+                                            <value name="TEXT">
+                                                <shadow type="text" id="i+tQ?5LHZ%+4}{n[=~-o">
+                                                    <field name="TEXT">abc</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_count" id="n=GAlIqmTu$tp=J}{Na," x="-528" y="463">
+                                            <value name="SUB">
+                                                <shadow type="text" id="RFq=wYOHEe=g];PIE6GW">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                            <value name="TEXT">
+                                                <shadow type="text" id=";v[G}wmssVXTjuv898Ep">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_replace" id="U!Ikq9ZT1Z{DegSBD=#?" x="-559" y="508">
+                                            <value name="FROM">
+                                                <shadow type="text" id="D/M.5|`]+mBGon4IGTC6">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                            <value name="TO">
+                                                <shadow type="text" id="eMlOnwY4isXzdcDWO^fG">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                            <value name="TEXT">
+                                                <shadow type="text" id="O)MIx_8JP2Ny*-o/0y-f">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_reverse" id="Q4#V4}?kBGs`?b;e0;fR" x="-442" y="550">
+                                            <value name="TEXT">
+                                                <shadow type="text" id="aIivxSN9cOuU!WNBNnZk">
+                                                    <field name="TEXT"></field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_print" id="@gpegR5XNUCd3bnk[e1}" x="-494" y="603">
+                                            <value name="TEXT">
+                                                <shadow type="text" id="8d]G]Z932%pK*-!zr^`s">
+                                                    <field name="TEXT">abc</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                        <block type="text_prompt_ext" id="`WCTQ;?@Y])=Y`q)hm~O" x="-544" y="654">
+                                            <mutation type="TEXT"></mutation>
+                                            <field name="TYPE">TEXT</field>
+                                            <value name="TEXT">
+                                                <shadow type="text" id="O0Lg=LXYu^xnI`d5qbI-">
+                                                    <field name="TEXT">abc</field>
+                                                </shadow>
+                                            </value>
+                                        </block>
+                                    </category>
+                                    <category name="Custom" colour="210" css-icon="customIcon fa fa-cog">
+                                        <block name="apiCall" type="api_call"></block>
+                                        <block name="apiCall2" type="more_custom_blocks"></block>
+                                        <block name="mainFunction" type="main_function"></block>
+                                        <block name="functionCaller" type="function_caller"></block>
+                                        <block name="customWhile" type="custom_while"></block>
+                                        <block name="dateField" type="fields_date"></block>
+                                        <block name="callback" type="callback"></block>
+                                        <block name="objectBuilder" type="object_builder"></block>
+                                        <block name="customisedList" type="customised_list"></block>
+                                        <block name="customisedList2" type="customised_list_2"></block>
+                                        <block type="variables_get_dynamic"></block>
+                                        <block type="variables_set_dynamic"></block>
+                                        <block type="custom_variable"></block>
+                                        <block type="list_traverser"></block>
+                                        <block name="try_catch" type="controls_try"></block>
+                                    </category>
+                                    <category name="TO-BEUsed" css-icon="fa fa-recycle">
+                                        <block type="list_traverser"></block>
+                                        <!-- <block type="newblock"></block> -->
+                                    </category>
+                                    <sep gap="8"></sep>
+                                    <category name="Functions" css-icon="fa fa-cubes">
+                                        <block name="data" type="procedures_defreturn"></block>
+                                        <block type="procedures_defnoreturn"></block>
+                                        <block type="procedures_callreturn"></block>
+                                        <block type="procedures_callnoreturn"></block>
+                                        <block type="procedures_ifreturn" id="sktls{T^g@*,aW*,5gl[" disabled="false" x="278" y="155">
+                                            <mutation value="1"></mutation>
+                                        </block>
+    
+                                        <!-- <block name="data" type="variables"></block> -->
+                                    </category>
+                                </xml>
+                                <br />
+                                <!-- <button id="run" type="button" class="btn btn-primary" onclick="runJS()">
+                        Run JS
+                      </button> -->
+                            
+                        
+                    </div>
+                    <div class="tab-pane fade " id="codeVisible" role="tabpanel" aria-labelledby="codeVisible-tab">
+                        <textarea id="code" name="code">
+    
+                    </textarea></div>
+                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="settings-tab">...</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <!-- <div class="row">
+                        <div id="textHolder" class="col-md-12">
+                            <p>Select a theme: <select onchange="selectTheme()" id=select>
+                                <option selected>default</option>
+                                <option>3024-day</option>
+                                <option>3024-night</option>
+                                <option>abbott</option>
+                                <option>abcdef</option>
+                                <option>ambiance</option>
+                                <option>ayu-dark</option>
+                                <option>ayu-mirage</option>
+                                <option>base16-dark</option>
+                                <option>base16-light</option>
+                                <option>bespin</option>
+                                <option>blackboard</option>
+                                <option>cobalt</option>
+                                <option>colorforth</option>
+                                <option>darcula</option>
+                                <option>dracula</option>
+                                <option>duotone-dark</option>
+                                <option>duotone-light</option>
+                                <option>eclipse</option>
+                                <option>elegant</option>
+                                <option>erlang-dark</option>
+                                <option>gruvbox-dark</option>
+                                <option>hopscotch</option>
+                                <option>icecoder</option>
+                                <option>idea</option>
+                                <option>isotope</option>
+                                <option>juejin</option>
+                                <option>lesser-dark</option>
+                                <option>liquibyte</option>
+                                <option>lucario</option>
+                                <option>material</option>
+                                <option>material-darker</option>
+                                <option>material-palenight</option>
+                                <option>material-ocean</option>
+                                <option>mbo</option>
+                                <option>mdn-like</option>
+                                <option>midnight</option>
+                                <option>monokai</option>
+                                <option>moxer</option>
+                                <option>neat</option>
+                                <option>neo</option>
+                                <option>night</option>
+                                <option>nord</option>
+                                <option>oceanic-next</option>
+                                <option>panda-syntax</option>
+                                <option>paraiso-dark</option>
+                                <option>paraiso-light</option>
+                                <option>pastel-on-dark</option>
+                                <option>railscasts</option>
+                                <option>rubyblue</option>
+                                <option>seti</option>
+                                <option>shadowfox</option>
+                                <option>solarized dark</option>
+                                <option>solarized light</option>
+                                <option>the-matrix</option>
+                                <option>tomorrow-night-bright</option>
+                                <option>tomorrow-night-eighties</option>
+                                <option>ttcn</option>
+                                <option>twilight</option>
+                                <option>vibrant-ink</option>
+                                <option>xq-dark</option>
+                                <option>xq-light</option>
+                                <option>yeti</option>
+                                <option>yonce</option>
+                                <option>zenburn</option>
+                            </select>
+                            </p>
+                            <div id="displayArea" style="height: 480px; width: 600px">
+                                <textarea id="displayCode" style="height: 480px; width: 600px; font-family: inherits"></textarea>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="row">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bodyTextParent" onclick="textAreaForBody()">Add Body
+                          </button>
+
+                    </div>
+                    <div class="row" id="upHolder">
+                        <div id="dataHolder" class="col-md-12">
+                            <div class="input-group mb-3 col-md-12">
+                                <span class="input-group-text" id="basic-addon1">Required Data</span>
+                                <input id="search-bar" type="search" class="form-control" placeholder="Search In Data" aria-label="Username" aria-describedby="basic-addon1" onkeyup="betterFunction()" />
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <ul id="search-list" class="list-group"></ul>
+                            <!-- <button class="btn btn-success btn-sm " type="button" data-toggle="tooltip" title="Delete"><i class="bi bi-archive"></i></button> -->
+                        </div>
+                        <!-- <div class="col-md-10"> -->
+                        <div id="dropBox" class="col-md-6" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <!-- <svg>
+                  <path
+                    class="blocklyPath"
+                    stroke="none"
+                    fill="#5ba58c"
+                    d=" m 8,0  h 68.07301330566406  v 5  H 76.07301330566406  V 5  H 76.07301330566406  V 22  H 76.07301330566406  V 22  V 26  h -68.07301330566406  H 8  V 20  c 0,-10  -8,8  -8,-7.5  s 8,2.5  8,-7.5 z
+"
+                  ></path>
+                  <text class="Label" x="8" y="0" style="text-anchor: middle;color:white;">
+                    S400,300 400,200
+                  </text>
+                </svg> -->
+                        </div>
+                        <hr>
+                        <!-- </div> -->
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2">
+                            <br />
+                            <button id="save" type="button" class="btn btn-success" onclick="addToToolbox()">
+                  Add
+                </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-success" onclick="varForToolbox()">
+                  Data Variables
+                </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="codeView" type="button" class="btn btn-primary" onclick="codeArea()">
+                  Code Viewer
+                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        <div class="row">
+
+            <div class="tab-content col-md-8" id="myTabContent">
+                <div class="tab-pane fade show active" id="blocks" role="tabpanel" aria-labelledby="blocks-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="blocklyDiv" style="height: 580px; width: 800px !important;"></div>
+                            <xml id="toolbox" style="display: none">
+                                <category name="BaseLogic" css-icon="fa fa-toggle-on">
+                                    <block type="controls_if"></block>
+                                    <block type="logic_compare" id="g:*8M4.TABu,2y5oj}4N" x="16" y="13">
+                                        <field name="OP">EQ</field>
+                                    </block>
+                                    <block type="logic_operation" id="Ks0Kh^{3R.Xx^SKz$)Bu" x="15" y="64">
+                                        <field name="OP">AND</field>
+                                    </block>
+                                    <block type="logic_negate" id="49bd?@4Lyznq+Wb$`ZxD" x="14" y="112"></block>
+                                    <block type="logic_boolean" id="|1pN|op,j?lWZFMXSVGp" x="18" y="169">
+                                        <field name="BOOL">TRUE</field>
+                                    </block>
+                                    <block type="logic_ternary" id="}gF$cuX4lI-,9R~K+zK5" x="17" y="213"></block>
+                                </category>
+                                <category name="BasicLoop" css-icon="fa fa-repeat">
+                                    <variables>
+                                        <variable id="SPZHIJ)-R#iV%K/=[dT2">j</variable>
+                                        <variable id="JL=MU%XtTGsa.#X3/~)?">k</variable>
+                                        <variable id="-%g[yQ)6wC;Q8)6)Sn/R">m</variable>
+                                    </variables>
+                                    <block type="controls_repeat_ext" id="]9YL|nnb%d]Y?NA2rV9|" x="163" y="-60">
+                                        <value name="TIMES">
+                                            <shadow type="math_number" id="[F9oA7@c#+|R@~*hz,Y5">
+                                                <field name="NUM">10</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="controls_whileUntil" id="$i5B4SxC!%RVW*iw$!/k" x="157" y="49">
+                                        <field name="MODE">WHILE</field>
+                                    </block>
+                                    <block type="controls_for" id="{3t?R71/ovQy10;dI#4u" x="161" y="149">
+                                        <field name="VAR" id="SPZHIJ)-R#iV%K/=[dT2">j</field>
+                                        <value name="FROM">
+                                            <shadow type="math_number" id="Le+UNo`;?5Ht[4CE5VtD">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="TO">
+                                            <shadow type="math_number" id="h~qZ)6e1m|:uK?8;3]i}">
+                                                <field name="NUM">10</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="BY">
+                                            <shadow type="math_number" id="ygW1H(UJ+u8cOjqK5^fu">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="controls_forEach" id="oX-){]ZgcpsmLZyL1@Gz" x="165" y="266">
+                                        <field name="VAR" id="-%g[yQ)6wC;Q8)6)Sn/R">m</field>
+                                    </block>
+                                    <block type="controls_forEach" id="acpGm^An%*)Q0pM-zmR|" x="164" y="358">
+                                        <field name="VAR" id="JL=MU%XtTGsa.#X3/~)?">k</field>
+                                        <statement name="DO">
+                                            <block type="controls_if" id="ubEji-xf2I7{H{C:JI8O">
+                                                <statement name="DO0">
+                                                    <block type="controls_flow_statements" id="F)eLxCec[3zzTZ=}f8#J">
+                                                        <field name="FLOW">BREAK</field>
+                                                    </block>
+                                                </statement>
+                                            </block>
+                                        </statement>
+                                    </block>
+                                </category>
+                                <category name="BasicMath" css-icon="fa fa-calculator">
+                                    <block type="math_number" id="lMG8[Aw9B?/OG^:4o2rH" x="158" y="49">
+                                        <field name="NUM">123</field>
+                                    </block>
+                                    <block type="math_arithmetic" id="eYX+$a=Kef?%uTWSH_IE" x="147" y="92">
+                                        <field name="OP">ADD</field>
+                                        <value name="A">
+                                            <shadow type="math_number" id="GKovVrH1*Ra3fZwtfhIK">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="B">
+                                            <shadow type="math_number" id="-)})S)e:3J@0Xlg6f6b.">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_single" id="F8aCHV%%G-7./14o[o#Z" x="148" y="146">
+                                        <field name="OP">ROOT</field>
+                                        <value name="NUM">
+                                            <shadow type="math_number" id="sO0|}D~]fO42*`E?H^M%">
+                                                <field name="NUM">9</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_trig" id="{9R#V1)n%EzP~cOap,{`" x="152" y="200">
+                                        <field name="OP">SIN</field>
+                                        <value name="NUM">
+                                            <shadow type="math_number" id="Xs{I-`2Vn]!:IqBK_U#{">
+                                                <field name="NUM">45</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_constant" id="OpF=6*S*0$51#Z=[ZOE5" x="162" y="240">
+                                        <field name="CONSTANT">PI</field>
+                                    </block>
+                                    <block type="math_number_property" id="1`pD07zl4Nl8!.=^ZSm6" x="151" y="281">
+                                        <mutation divisor_input="false"></mutation>
+                                        <field name="PROPERTY">EVEN</field>
+                                        <value name="NUMBER_TO_CHECK">
+                                            <shadow type="math_number" id="588VmPAYnE=s[8*D|XcS">
+                                                <field name="NUM">0</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_round" id="B:]u_jjJ,x!xO]YAKQQ:" x="142" y="337">
+                                        <field name="OP">ROUND</field>
+                                        <value name="NUM">
+                                            <shadow type="math_number" id="]1hB=Ry,:*?V05IPKm=_">
+                                                <field name="NUM">3.1</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_on_list" id="H!^PQH%=WbfH6XQO9X(m" x="134" y="385">
+                                        <mutation op="SUM"></mutation>
+                                        <field name="OP">SUM</field>
+                                    </block>
+                                    <block type="math_modulo" id="XDQ*dQi]O^.9=8`f8$Ys" x="135" y="428">
+                                        <value name="DIVIDEND">
+                                            <shadow type="math_number" id="Fx$ZUUKFVWh}M`Tlq=%J">
+                                                <field name="NUM">64</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="DIVISOR">
+                                            <shadow type="math_number" id="7rmQE26HJmFeVlT9W3%+">
+                                                <field name="NUM">10</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_constrain" id="_,+_A3Mgqq!dhI,cv[2`" x="136" y="486">
+                                        <value name="VALUE">
+                                            <shadow type="math_number" id="UlI`wqBbIbYzL,!o]pqY">
+                                                <field name="NUM">50</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="LOW">
+                                            <shadow type="math_number" id="Z2,F`dY9#}Sx3==PvxO?">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="HIGH">
+                                            <shadow type="math_number" id="-UF1}3c3`bV,ltKq#@5a">
+                                                <field name="NUM">100</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_random_int" id="cBv8|v@=SRXG[L{Sr[_." x="125" y="544">
+                                        <value name="FROM">
+                                            <shadow type="math_number" id="!/_#MB#S16N?.r[5b1Z_">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="TO">
+                                            <shadow type="math_number" id="jcBpKj.ECtHE6?Od1=Tg">
+                                                <field name="NUM">100</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="math_random_float" id="A)sfkk4eQeJtn7V6!Ro=" x="127" y="594"></block>
+                                    <block type="math_atan2" id="0~$+vy5VGa38e8;v8R`{" x="122" y="630">
+                                        <value name="X">
+                                            <shadow type="math_number" id="bFjd4=3@`@:%*b:NfqWc">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                        <value name="Y">
+                                            <shadow type="math_number" id="r0~D|nK.O,[b`7?|*s@P">
+                                                <field name="NUM">1</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                </category>
+                                <category name="BasicLists" css-icon="fa fa-list">
+                                    <variables>
+                                        <variable id="9~YCUs090|T9d/ZOv~ou">list</variable>
+                                    </variables>
+                                    <block type="lists_create_with" id="5PpWRJ{d;HV{e#Eb_MbZ" x="-609" y="-63">
+                                        <mutation items="0"></mutation>
+                                    </block>
+                                    <block type="lists_create_with" id="?k6YDx/Sc~xQ_LH[5-aD" x="-616" y="-20">
+                                        <mutation items="3"></mutation>
+                                    </block>
+                                    <block type="lists_repeat" id="~Y#;5^^N;d89Ex+=V3=D" x="-614" y="71">
+                                        <value name="NUM">
+                                            <shadow type="math_number" id=")k{K+RB:ZxRLu*R*8dJ+">
+                                                <field name="NUM">5</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="lists_length" id="C;er9V{S}=[e(),W;3S5" x="-614" y="129"></block>
+                                    <block type="lists_isEmpty" id="QQ{:VC2WS7mnh39+_=`}" x="-614" y="176"></block>
+                                    <block type="lists_indexOf" id="R1uB.$rq9kn~IrI~n#Uc" x="-616" y="224">
+                                        <field name="END">FIRST</field>
+                                        <value name="VALUE">
+                                            <block type="variables_get" id="]MR)_7m]{EIE@9tQ`Ipq">
+                                                <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="lists_getIndex" id="b7Mbri6_|TyCR[um}gF]" x="-623" y="274">
+                                        <mutation statement="false" at="true"></mutation>
+                                        <field name="MODE">GET</field>
+                                        <field name="WHERE">FROM_START</field>
+                                        <value name="VALUE">
+                                            <block type="variables_get" id="M1~KF_!F|7C:r]{nD`6m">
+                                                <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="lists_setIndex" id="@30CE3WYUa8FhY62LUVD" x="-616" y="326">
+                                        <mutation at="true"></mutation>
+                                        <field name="MODE">SET</field>
+                                        <field name="WHERE">FROM_START</field>
+                                        <value name="LIST">
+                                            <block type="variables_get" id="c.$jzIQofq7hC:4}=m:;">
+                                                <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="lists_getSublist" id="UY1}9fG0Thi/xHK,YV4|" x="-630" y="380">
+                                        <mutation at1="true" at2="true"></mutation>
+                                        <field name="WHERE1">FROM_START</field>
+                                        <field name="WHERE2">FROM_START</field>
+                                        <value name="LIST">
+                                            <block type="variables_get" id="+etM|@V,l.WOu3xj!wT#">
+                                                <field name="VAR" id="9~YCUs090|T9d/ZOv~ou">list</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="lists_split" id="uExZK=*^{L_P}rBaNIr9" x="-632" y="439">
+                                        <mutation mode="SPLIT"></mutation>
+                                        <field name="MODE">SPLIT</field>
+                                        <value name="DELIM">
+                                            <shadow type="text" id="$8;qi4{3DCzktB3LXlL*">
+                                                <field name="TEXT">,</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="lists_sort" id="B4cdN[PTO%92nf?d-=8)" x="-628" y="489">
+                                        <field name="TYPE">NUMERIC</field>
+                                        <field name="DIRECTION">1</field>
+                                    </block>
+                                    <block type="lists_reverse" id="^K?;F9wSV;O|XF=[0921" x="-628" y="527"></block>
+                                </category>
+                                <category name="BasicText" css-icon="fa fa-font">
+                                    <variables>
+                                        <variable id="~Vs1Ke|gzk:*)*p,Z+Sm">item</variable>
+                                        <variable id="N7N=kd/EjIAIN~=!%0oW">text</variable>
+                                    </variables>
+                                    <block type="text" id="dj4pq)FYsD5SUnzHK)8W" x="-490" y="16">
+                                        <field name="TEXT"></field>
+                                    </block>
+                                    <block type="text_multiline" id="$bF,l!*j+D4EOrr%{W`J" x="-501" y="54">
+                                        <field name="TEXT"></field>
+                                    </block>
+                                    <block type="text_join" id="?sixV,kTWOAtv06aG*f]" x="-500" y="99">
+                                        <mutation items="2"></mutation>
+                                    </block>
+                                    <block type="text_append" id=":;;XH!`k[4`zA;J6m7dL" x="-493" y="167">
+                                        <field name="VAR" id="~Vs1Ke|gzk:*)*p,Z+Sm">item</field>
+                                        <value name="TEXT">
+                                            <shadow type="text" id="u7[#2n5K$5S)ZP@gMP!v">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_length" id="ba9$,N~+15.;k:6|TwR1" x="-496" y="211">
+                                        <value name="VALUE">
+                                            <shadow type="text" id="|V-Bmh^D~#gp(ZRPPa%:">
+                                                <field name="TEXT">abc</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_isEmpty" id="qRLesDHIszRPpcLABYSl" x="-494" y="249">
+                                        <value name="VALUE">
+                                            <shadow type="text" id="@63vl@4(~!/e-AqhqIcy">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_indexOf" id="N2NKIaAAZr#rV_QJX:|r" x="-515" y="300">
+                                        <field name="END">FIRST</field>
+                                        <value name="VALUE">
+                                            <block type="variables_get" id="F?:vGhh2i;B:jOD}7iu|">
+                                                <field name="VAR" id="N7N=kd/EjIAIN~=!%0oW">text</field>
+                                            </block>
+                                        </value>
+                                        <value name="FIND">
+                                            <shadow type="text" id="UL;nlkWA!htD6:~lqHvp">
+                                                <field name="TEXT">abc</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_charAt" id="#l@F8Z,rtqAbm~`s$TCi" x="-475" y="345">
+                                        <mutation at="true"></mutation>
+                                        <field name="WHERE">FROM_START</field>
+                                        <value name="VALUE">
+                                            <block type="variables_get" id=";+nA_f8Ox=TsryqnfK-p">
+                                                <field name="VAR" id="N7N=kd/EjIAIN~=!%0oW">text</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="text_changeCase" id="M=llf_xD+L3(QMSmSSi}" x="-504" y="419">
+                                        <field name="CASE">UPPERCASE</field>
+                                        <value name="TEXT">
+                                            <shadow type="text" id="i+tQ?5LHZ%+4}{n[=~-o">
+                                                <field name="TEXT">abc</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_count" id="n=GAlIqmTu$tp=J}{Na," x="-528" y="463">
+                                        <value name="SUB">
+                                            <shadow type="text" id="RFq=wYOHEe=g];PIE6GW">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                        <value name="TEXT">
+                                            <shadow type="text" id=";v[G}wmssVXTjuv898Ep">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_replace" id="U!Ikq9ZT1Z{DegSBD=#?" x="-559" y="508">
+                                        <value name="FROM">
+                                            <shadow type="text" id="D/M.5|`]+mBGon4IGTC6">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                        <value name="TO">
+                                            <shadow type="text" id="eMlOnwY4isXzdcDWO^fG">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                        <value name="TEXT">
+                                            <shadow type="text" id="O)MIx_8JP2Ny*-o/0y-f">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_reverse" id="Q4#V4}?kBGs`?b;e0;fR" x="-442" y="550">
+                                        <value name="TEXT">
+                                            <shadow type="text" id="aIivxSN9cOuU!WNBNnZk">
+                                                <field name="TEXT"></field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_print" id="@gpegR5XNUCd3bnk[e1}" x="-494" y="603">
+                                        <value name="TEXT">
+                                            <shadow type="text" id="8d]G]Z932%pK*-!zr^`s">
+                                                <field name="TEXT">abc</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                    <block type="text_prompt_ext" id="`WCTQ;?@Y])=Y`q)hm~O" x="-544" y="654">
+                                        <mutation type="TEXT"></mutation>
+                                        <field name="TYPE">TEXT</field>
+                                        <value name="TEXT">
+                                            <shadow type="text" id="O0Lg=LXYu^xnI`d5qbI-">
+                                                <field name="TEXT">abc</field>
+                                            </shadow>
+                                        </value>
+                                    </block>
+                                </category>
+                                <category name="Custom" colour="210" css-icon="customIcon fa fa-cog">
+                                    <block name="apiCall" type="api_call"></block>
+                                    <block name="apiCall2" type="more_custom_blocks"></block>
+                                    <block name="mainFunction" type="main_function"></block>
+                                    <block name="functionCaller" type="function_caller"></block>
+                                    <block name="customWhile" type="custom_while"></block>
+                                    <block name="dateField" type="fields_date"></block>
+                                    <block name="callback" type="callback"></block>
+                                    <block name="objectBuilder" type="object_builder"></block>
+                                    <block name="customisedList" type="customised_list"></block>
+                                    <block name="customisedList2" type="customised_list_2"></block>
+                                    <block type="variables_get_dynamic"></block>
+                                    <block type="variables_set_dynamic"></block>
+                                    <block type="custom_variable"></block>
+                                    <block type="list_traverser"></block>
+                                    <block name="try_catch" type="controls_try"></block>
+                                </category>
+                                <category name="TO-BEUsed" css-icon="fa fa-recycle">
+                                    <block type="list_traverser"></block>
+                                    <!-- <block type="newblock"></block> -->
+                                </category>
+                                <sep gap="8"></sep>
+                                <category name="Functions" css-icon="fa fa-cubes">
+                                    <block name="data" type="procedures_defreturn"></block>
+                                    <block type="procedures_defnoreturn"></block>
+                                    <block type="procedures_callreturn"></block>
+                                    <block type="procedures_callnoreturn"></block>
+                                    <block type="procedures_ifreturn" id="sktls{T^g@*,aW*,5gl[" disabled="false" x="278" y="155">
+                                        <mutation value="1"></mutation>
+                                    </block>
+
+                                    <!-- <block name="data" type="variables"></block> -->
+                                </category>
+                            </xml>
+                            <br />
+                            <button id="run" type="button" class="btn btn-primary" onclick="runJS()">
+                    Run JS
+                  </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade " id="codeVisible" role="tabpanel" aria-labelledby="codeVisible-tab">
+                    <textarea id="code" name="code">
+
+                </textarea></div>
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="settings-tab">...</div>
+            </div>
+            <!-- <button id="run" onclick="runJS()">Run JS</button> -->
+
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <!-- <div class="row">
+                        <div id="textHolder" class="col-md-12">
+                            <p>Select a theme: <select onchange="selectTheme()" id=select>
+                                <option selected>default</option>
+                                <option>3024-day</option>
+                                <option>3024-night</option>
+                                <option>abbott</option>
+                                <option>abcdef</option>
+                                <option>ambiance</option>
+                                <option>ayu-dark</option>
+                                <option>ayu-mirage</option>
+                                <option>base16-dark</option>
+                                <option>base16-light</option>
+                                <option>bespin</option>
+                                <option>blackboard</option>
+                                <option>cobalt</option>
+                                <option>colorforth</option>
+                                <option>darcula</option>
+                                <option>dracula</option>
+                                <option>duotone-dark</option>
+                                <option>duotone-light</option>
+                                <option>eclipse</option>
+                                <option>elegant</option>
+                                <option>erlang-dark</option>
+                                <option>gruvbox-dark</option>
+                                <option>hopscotch</option>
+                                <option>icecoder</option>
+                                <option>idea</option>
+                                <option>isotope</option>
+                                <option>juejin</option>
+                                <option>lesser-dark</option>
+                                <option>liquibyte</option>
+                                <option>lucario</option>
+                                <option>material</option>
+                                <option>material-darker</option>
+                                <option>material-palenight</option>
+                                <option>material-ocean</option>
+                                <option>mbo</option>
+                                <option>mdn-like</option>
+                                <option>midnight</option>
+                                <option>monokai</option>
+                                <option>moxer</option>
+                                <option>neat</option>
+                                <option>neo</option>
+                                <option>night</option>
+                                <option>nord</option>
+                                <option>oceanic-next</option>
+                                <option>panda-syntax</option>
+                                <option>paraiso-dark</option>
+                                <option>paraiso-light</option>
+                                <option>pastel-on-dark</option>
+                                <option>railscasts</option>
+                                <option>rubyblue</option>
+                                <option>seti</option>
+                                <option>shadowfox</option>
+                                <option>solarized dark</option>
+                                <option>solarized light</option>
+                                <option>the-matrix</option>
+                                <option>tomorrow-night-bright</option>
+                                <option>tomorrow-night-eighties</option>
+                                <option>ttcn</option>
+                                <option>twilight</option>
+                                <option>vibrant-ink</option>
+                                <option>xq-dark</option>
+                                <option>xq-light</option>
+                                <option>yeti</option>
+                                <option>yonce</option>
+                                <option>zenburn</option>
+                            </select>
+                            </p>
+                            <div id="displayArea" style="height: 480px; width: 600px">
+                                <textarea id="displayCode" style="height: 480px; width: 600px; font-family: inherits"></textarea>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="row">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bodyTextParent" onclick="textAreaForBody()">Add Body
+                          </button>
+
+                    </div>
+                    <div class="row" id="upHolder">
+                        <div id="dataHolder" class="col-md-12">
+                            <div class="input-group mb-3 col-md-12">
+                                <span class="input-group-text" id="basic-addon1">Required Data</span>
+                                <input id="search-bar" type="search" class="form-control" placeholder="Search In Data" aria-label="Username" aria-describedby="basic-addon1" onkeyup="betterFunction()" />
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <ul id="search-list" class="list-group"></ul>
+                            <!-- <button class="btn btn-success btn-sm " type="button" data-toggle="tooltip" title="Delete"><i class="bi bi-archive"></i></button> -->
+                        </div>
+                        <!-- <div class="col-md-10"> -->
+                        <div id="dropBox" class="col-md-6" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <!-- <svg>
+                  <path
+                    class="blocklyPath"
+                    stroke="none"
+                    fill="#5ba58c"
+                    d=" m 8,0  h 68.07301330566406  v 5  H 76.07301330566406  V 5  H 76.07301330566406  V 22  H 76.07301330566406  V 22  V 26  h -68.07301330566406  H 8  V 20  c 0,-10  -8,8  -8,-7.5  s 8,2.5  8,-7.5 z
+"
+                  ></path>
+                  <text class="Label" x="8" y="0" style="text-anchor: middle;color:white;">
+                    S400,300 400,200
+                  </text>
+                </svg> -->
+                        </div>
+                        <hr>
+                        <!-- </div> -->
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2">
+                            <br />
+                            <button id="save" type="button" class="btn btn-success" onclick="addToToolbox()">
+                  Add
+                </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-success" onclick="varForToolbox()">
+                  Data Variables
+                </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="codeView" type="button" class="btn btn-primary" onclick="codeArea()">
+                  Code Viewer
+                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="bodyTextParent" tabindex="-1" role="dialog" aria-labelledby="Body Data">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="bodyValue"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+    <script type="text/javascript" src="https://developerapp.leadsquared.com/customapp/script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</body>
+
+</html>

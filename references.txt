@@ -31,3 +31,7 @@ https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-i
 workspace.refreshToolboxSelection();=>To refresh the toolbox selection, present in variables_dynamic
 
 https://blocklycodelabs.dev/codelabs/custom-toolbox/index.html?index=..%2F..index#1 =>Custom Toolbox Icon
+
+https://blocklycodelabs.dev/codelabs/custom-renderer/index.html?index=..%2F..index#5 => To change connection element shapes
+
+https://developers.google.com/blockly/reference/js/Blockly.Block#setCollapsed => Set collapsed

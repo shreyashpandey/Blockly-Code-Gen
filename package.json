@@ -7,10 +7,12 @@
     "serve": "vite preview"
   },
   "devDependencies": {
+    "@blockly/dev-tools": "^2.6.1",
     "vite": "^2.4.4"
   },
   "dependencies": {
     "@blockly/block-extension-tooltip": "^1.0.17",
+    "@blockly/block-plus-minus": "^2.0.39",
     "@blockly/field-date": "^4.2.24",
     "@blockly/field-slider": "^2.1.28",
     "axios": "^0.21.1",
